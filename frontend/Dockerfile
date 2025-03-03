@@ -8,7 +8,9 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # 의존성 설치 (캐싱 활용 가능)
-RUN npm install
+RUN NODE_OPTIONS="--max-old-space-size=2048" npm install --no-audit --prefer-offline --no-cache
+
+
 
 # 애플리케이션 소스 코드 복사
 COPY . .
