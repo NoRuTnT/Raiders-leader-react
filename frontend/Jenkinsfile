@@ -1,0 +1,74 @@
+pipeline {
+    agent any
+
+    environment {
+        imageName = "norutnt/frontend"
+        registryCredential = "norutnt-docker"
+        dockerImage = ''
+
+        releaseServerAccount = 'ubuntu'
+        releaseServerUri = 'partycontrol.duckdns.org'
+        releasePort = '3000'
+
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', credentialsId: 'github-credential', url: 'https://github.com/NoRuTnT/Raiders-leader-react.git'
+            }
+        }
+
+        stage('[Frontend]Image Build & DockerHub Push') {
+            steps {
+                dir('frontend') {
+                    script {
+                        docker.withRegistry('', registryCredential) {
+                            // 이미지 빌드
+                            sh "docker build -t $imageName:$BUILD_NUMBER ."
+                            sh "docker build -t $imageName:latest ."
+
+                            // Docker Hub에 푸시
+                            sh "docker push $imageName:$BUILD_NUMBER"
+                            sh "docker push $imageName:latest"
+                        }
+                    }
+                }
+            }
+        }
+
+
+        stage('DockerHub Pull') {
+            steps {
+                sshagent(credentials: ['ubuntu']) {
+                    sh "ssh -o StrictHostKeyChecking=no $releaseServerAccount@$releaseServerUri 'sudo docker pull $imageName:latest'"
+                }
+            }
+        }
+
+        stage('Before Service Stop') {
+            steps {
+                sshagent(credentials: ['ubuntu']) {
+                    sh '''
+                    ssh -o StrictHostKeyChecking=no ubuntu@partycontrol.duckdns.org "
+                    docker stop front || true
+
+                    docker rm -f front || true
+                    "
+                    '''
+                }
+            }
+        }
+
+
+        stage('Service Start') {
+            steps {
+                sshagent(credentials: ['ubuntu']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no $releaseServerAccount@$releaseServerUri "sudo docker run -i -e TZ=Asia/Seoul --name front --network my-network -p $releasePort:$releasePort -d $imageName:latest"
+                    """
+                }
+            }
+        }
+    }
+}
