@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    [
+      "transform-imports",
+      {
+        "@radix-ui/react-tabs": {
+          "transform": "@radix-ui/react-tabs/dist/index.cjs",
+          "preventFullImport": true
+        }
+      }
+    ]
+  ]
+}
