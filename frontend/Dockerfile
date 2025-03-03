@@ -1,10 +1,6 @@
 # 고정된 이미지를 기반으로 시작
 FROM node:20.15.0
 
-RUN apk --no-cache add tzdata && \
-        cp /usr/share/zoneinfo/Asia/Seoul /etc/localtime && \
-        echo "Asia/Seoul" > /etc/timezone
-
 # 작업 디렉토리 설정
 WORKDIR /usr/src/app
 
