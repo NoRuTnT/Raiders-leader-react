@@ -268,3 +268,18 @@ fabric.properties
 .idea/**/azureSettings.xml
 
 # End of https://www.toptal.com/developers/gitignore/api/react,webstorm,node
+/build/static/js/453.8ab44547.chunk.js
+/build/static/js/453.8ab44547.chunk.js.map
+/build/asset-manifest.json
+/build/favicon.ico
+/build/give.jpg
+/build/index.html
+/build/logo192.png
+/build/logo512.png
+/build/static/js/main.dbc40dcb.js
+/build/static/js/main.dbc40dcb.js.LICENSE.txt
+/build/static/js/main.dbc40dcb.js.map
+/build/static/css/main.f536c41f.css
+/build/static/css/main.f536c41f.css.map
+/build/manifest.json
+/build/robots.txt
