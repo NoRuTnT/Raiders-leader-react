@@ -1,5 +1,6 @@
 import { Home, Users, PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import type React from "react";
 
 interface SidebarProps {
     activeTab: string
@@ -9,6 +10,12 @@ interface SidebarProps {
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
     return (
         <div className="w-20 bg-muted border-r flex flex-col items-center py-6 gap-6">
+            <img
+                src="/give.jpg"
+                alt="giveme"
+                className="w-20 h-20 object-cover"
+            />
+
             <Button
                 variant={activeTab === "parties" ? "default" : "ghost"}
                 size="icon"
