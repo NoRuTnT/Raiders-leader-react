@@ -5,13 +5,14 @@ import { useState, useEffect, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle, DialogClose} from "@/components/ui/dialog"
 import type { Character } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { getCharacterList, getCharacterInfo, getCharacterSpringApi, refreshCharacterInfo } from "@/lib/api"
 import { useCharacterStore } from "@/lib/stores/characterStore"
 import { toast } from "sonner";
-import { RefreshCw } from "lucide-react"
+import { RefreshCw, ChevronDown, ChevronUp, X } from "lucide-react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 
 
@@ -24,10 +25,24 @@ export function CharacterList() {
     const [isCharacterModalOpen, setIsCharacterModalOpen] = useState(false)
     const [isRefreshing, setIsRefreshing] = useState(false)
     const [lastRefreshTime, setLastRefreshTime] = useState<number | null>(null)
+    const [collapsedAdventures, setCollapsedAdventures] = useState<Record<string, boolean>>({})
 
-    useEffect(() => {
-        console.log("isSearchModalOpen 상태 변경됨:", isSearchModalOpen);
-    }, [isSearchModalOpen]);
+    // 모험단별로 캐릭터 그룹화
+    const adventureGroups = characters.reduce((groups: Record<string, Character[]>, character) => {
+        const adventureName = character.adventureName || "기타"
+        if (!groups[adventureName]) {
+            groups[adventureName] = []
+        }
+        groups[adventureName].push(character)
+        return groups
+    }, {})
+
+    const toggleAdventureCollapse = (adventureName: string) => {
+        setCollapsedAdventures((prev) => ({
+            ...prev,
+            [adventureName]: !prev[adventureName],
+        }))
+    }
 
 
     const handleSearch = async (e: React.FormEvent) => {
@@ -142,69 +157,112 @@ export function CharacterList() {
             </Dialog>
 
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-                {characters.map((character: Character) => (
-                    <Card key={character.characterId} onClick={() => handleCharacterClick(character)} className="cursor-pointer">
-                        <div className="flex flex-col items-center justify-center">
-                            <img
-                                src={`https://img-api.neople.co.kr/df/servers/${character.serverId}/characters/${character.characterId}?zoom=1`}
-                                alt={character.characterName}
-                                className="w-64 h-64 rounded-full object-cover mb-4"
-                            />
-
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-lg ">{character.characterName}</CardTitle>
-                            </CardHeader>
+            {/* 모험단별 캐릭터 목록 */}
+            <div className="space-y-6">
+                {Object.entries(adventureGroups).map(([adventureName, chars]) => (
+                    <Collapsible
+                        key={adventureName}
+                        open={!collapsedAdventures[adventureName]}
+                        onOpenChange={() => toggleAdventureCollapse(adventureName)}
+                        className="border rounded-lg p-4"
+                    >
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xl font-semibold">
+                                {adventureName} ({chars.length})
+                            </h3>
+                            <CollapsibleTrigger asChild>
+                                <Button variant="ghost" size="sm">
+                                    {collapsedAdventures[adventureName] ? (
+                                        <ChevronDown className="h-4 w-4" />
+                                    ) : (
+                                        <ChevronUp className="h-4 w-4" />
+                                    )}
+                                </Button>
+                            </CollapsibleTrigger>
                         </div>
 
-                        <CardContent>
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                    <Badge variant="outline">Lv.{character.level}</Badge>
-                                    <Badge>{character.jobGrowName}</Badge>
-                                </div>
-                                <p className="text-sm">
-                                    <span className="font-medium">명성:</span> {character.fame}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-medium">모험단:</span> {character.adventureName}
-                                </p>
-                                <p className="text-sm">
-                                    <span className="font-medium">서버:</span> {character.serverId}
-                                </p>
+                        <CollapsibleContent>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
+                                {chars.map((character) => (
+                                    <Card
+                                        key={character.characterId}
+                                        onClick={() => handleCharacterClick(character)}
+                                        className="cursor-pointer hover:shadow-md transition-shadow"
+                                    >
+                                        <div className="flex flex-col items-center p-4">
+                                            <img
+                                                src={`https://img-api.neople.co.kr/df/servers/${character.serverId}/characters/${character.characterId}?zoom=1`}
+                                                alt={character.characterName}
+                                                className="w-32 h-32 rounded-full object-cover mb-2"
+                                            />
+                                            <h4 className="font-medium text-center">{character.characterName}</h4>
+                                            <div className="flex items-center gap-2 mt-2">
+                                                <Badge variant="outline" className="text-xs">
+                                                    Lv.{character.level}
+                                                </Badge>
+                                                <Badge variant="secondary" className="text-xs">
+                                                    {character.jobGrowName}
+                                                </Badge>
+                                            </div>
+                                            <p className="text-green-600 text-sm mt-2">{character.adventureName}</p>
+                                            <div className="flex items-center mt-1">
+                                                <img src="/fame.png" alt="명성" className="w-4 h-4 mr-1" />
+                                                <span className="text-yellow-500 text-sm">{character.fame}</span>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                ))}
                             </div>
-                        </CardContent>
-                    </Card>
+                        </CollapsibleContent>
+                    </Collapsible>
                 ))}
             </div>
 
+            {/* 캐릭터 상세 모달 */}
             <Dialog open={isCharacterModalOpen} onOpenChange={setIsCharacterModalOpen}>
                 <DialogOverlay className="fixed inset-0 bg-black/80" />
-                    <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 shadow-lg z-50">
-                        <DialogHeader>
-                            <DialogTitle className="flex justify-between items-center">
-                                {selectedCharacter?.characterName}
-                                <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    onClick={handleRefreshCharacter}
-                                    disabled={isRefreshing ? true : lastRefreshTime ? Date.now() - lastRefreshTime < 60000 : false}
+                <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 shadow-lg z-50">
+                    <div className="flex justify-between items-center">
+                        <DialogTitle>{selectedCharacter?.characterName}</DialogTitle>
 
-                                >
-                                    <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
-                                </Button>
-                            </DialogTitle>
-                        </DialogHeader>
-                        {selectedCharacter && (
-                            <div className="mt-4 space-y-2">
-                                <p>레벨: {selectedCharacter.level}</p>
-                                <p>직업: {selectedCharacter.jobGrowName}</p>
-                                <p>명성: {selectedCharacter.fame}</p>
-                                <p>모험단: {selectedCharacter.adventureName}</p>
-                                <p>서버: {selectedCharacter.serverId}</p>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={handleRefreshCharacter}
+                            disabled={isRefreshing ? true : lastRefreshTime ? Date.now() - lastRefreshTime < 60000 : false}
+                            className="mr-5"
+                        >
+                            <RefreshCw className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`} />
+                        </Button>
+                    </div>
+
+                    {selectedCharacter && (
+                        <div className="mt-4 space-y-2">
+                            <div className="flex justify-center mb-4">
+                                <img
+                                    src={`https://img-api.neople.co.kr/df/servers/${selectedCharacter.serverId}/characters/${selectedCharacter.characterId}?zoom=1`}
+                                    alt={selectedCharacter.characterName}
+                                    className="w-32 h-32 rounded-full object-cover"
+                                />
                             </div>
-                        )}
-                    </DialogContent>
+                            <p>
+                                <span className="font-medium">레벨:</span> {selectedCharacter.level}
+                            </p>
+                            <p>
+                                <span className="font-medium">직업:</span> {selectedCharacter.jobGrowName}
+                            </p>
+                            <p>
+                                <span className="font-medium">명성:</span> {selectedCharacter.fame}
+                            </p>
+                            <p>
+                                <span className="font-medium">모험단:</span> {selectedCharacter.adventureName}
+                            </p>
+                            <p>
+                                <span className="font-medium">서버:</span> {selectedCharacter.serverId}
+                            </p>
+                        </div>
+                    )}
+                </DialogContent>
             </Dialog>
         </div>
     )
