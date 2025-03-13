@@ -48,7 +48,10 @@ export function CharacterCard({ character }: CharacterCardProps) {
                                 {character.jobGrowName}
                             </Badge>
                         </div>
-                        <p className="text-sm text-muted-foreground mt-1">명성: {character.fame}</p>
+                        <div className="flex items-center mt-1">
+                            <img src="/fame.png" alt="명성" className="w-4 h-4 mr-1" />
+                            <span className="text-yellow-500 text-sm">{character.fame}</span>
+                        </div>
                     </div>
                 </div>
             </CardContent>
