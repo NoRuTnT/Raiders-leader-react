@@ -6,14 +6,15 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { CharacterCard } from "@/components/character-card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { usePartyStore } from "@/lib/stores/partyStore"
 import { useDungeonStore } from "@/lib/stores/dungeonStore"
 import { useCharacterStore } from "@/lib/stores/characterStore"
 import { toast } from "sonner"
-import { Pencil, Trash2 } from 'lucide-react'
+import { Pencil, Trash2,ChevronDown, ChevronUp } from 'lucide-react'
 import type { Character,Dungeon } from "@/lib/types"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 
 export function PartyAdd() {
@@ -26,11 +27,19 @@ export function PartyAdd() {
     const [isAddDungeonOpen, setIsAddDungeonOpen] = useState(false)
     const [isDungeonListOpen, setIsDungeonListOpen] = useState(false)
     const [editingDungeon, setEditingDungeon] = useState<Dungeon | null>(null)
+    const [collapsedAdventures, setCollapsedAdventures] = useState<Record<string, boolean>>({})
+
 
     useEffect(() => {
         console.log('Rendered partyMembers:', partyMembers);
     }, [partyMembers]);
 
+    const toggleAdventureCollapse = (adventureName: string) => {
+        setCollapsedAdventures((prev) => ({
+            ...prev,
+            [adventureName]: !prev[adventureName],
+        }))
+    }
 
     const calculateAverageFame = () => {
         const validMembers = partyMembers
@@ -260,18 +269,35 @@ export function PartyAdd() {
                      style={{ maxHeight: "calc(100vh - 2rem)"}}
                              >
                     {Object.entries(groupCharactersByAdventureName(characters)).map(([adventureName, chars]) => (
-                        <div key={adventureName} className="space-y-2 mt-3">
-                            <h4 className="font-medium">{adventureName}</h4>
-                            <div className="grid grid-cols-2 gap-4">
-                                {chars.map((character) => (
-                                    <CharacterCard
-                                        key={character.characterId}
-                                        character={character}
-                                    />
-                                ))}
+                        <Collapsible
+                            key={adventureName}
+                            open={!collapsedAdventures[adventureName]}
+                            onOpenChange={() => toggleAdventureCollapse(adventureName)}
+                            className="border rounded-lg p-4 mb-4"
+                        >
+                            <div className="flex items-center justify-between">
+                                <h4 className="font-medium">
+                                    {adventureName} ({chars.length})
+                                </h4>
+                                <CollapsibleTrigger asChild>
+                                    <Button variant="ghost" size="sm">
+                                        {collapsedAdventures[adventureName] ? (
+                                            <ChevronDown className="h-4 w-4" />
+                                        ) : (
+                                            <ChevronUp className="h-4 w-4" />
+                                        )}
+                                    </Button>
+                                </CollapsibleTrigger>
                             </div>
 
-                        </div>
+                            <CollapsibleContent>
+                                <div className="grid grid-cols-2 gap-4 mt-4">
+                                    {chars.map((character) => (
+                                        <CharacterCard key={character.characterId} character={character} />
+                                    ))}
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
                     ))}
                 </div>
             </div>
