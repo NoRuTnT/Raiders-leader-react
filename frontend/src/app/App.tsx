@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react"
+import React, { useEffect } from "react"
 import { DndProvider } from "react-dnd"
 import { HTML5Backend } from "react-dnd-html5-backend"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -11,11 +11,13 @@ import { PartyList } from "@/components/party-list"
 import { useCharacterStore } from "@/lib/stores/characterStore"
 import { usePartyStore } from "@/lib/stores/partyStore"
 import { useDungeonStore } from "@/lib/stores/dungeonStore"
+import { useAppStore } from "@/lib/stores/appStore"
 import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
 
 function App() {
-  const [ activeTab, setActiveTab] = useState("parties")
+    const { activeTab, setActiveTab, setEditingParty } = useAppStore()
   const { fetchCharacterStore, isLoading: charactersLoading, error: charactersError } = useCharacterStore()
   const { fetchPartyStore, isLoading: partiesLoading, error: partiesError } = usePartyStore()
   const { fetchDungeonStore, isLoading: dungeonsLoading, error: dungeonsError } = useDungeonStore()
@@ -29,27 +31,35 @@ function App() {
   }, [fetchCharacterStore, fetchPartyStore, fetchDungeonStore])
 
   useEffect(() => {
-    if (charactersError) toast("charactersError")
-    if (partiesError) toast("partiesError")
-    if (dungeonsError) toast("dungeonsError")
+
+      if (charactersError) toast("charactersError")
+      if (partiesError) toast("partiesError")
+      if (dungeonsError) toast("dungeonsError")
   }, [charactersError, partiesError, dungeonsError])
 
   const handleTabChange = (tab: string) => {
-    console.log("Tab changed:", tab);
-
-    setActiveTab(tab)
+      if (tab === "party-add" && activeTab !== "party-add") {
+      } else {
+          setEditingParty(null)
+      }
+      setActiveTab(tab)
   }
 
   const isLoading = charactersLoading || partiesLoading || dungeonsLoading
 
 
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
 
   return (
       <DndProvider backend={HTML5Backend}>
-        <div className="flex min-h-screen bg-background">
+        <div className="flex min-h-screen bg-background relative">
+          {isLoading && (
+            <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+              <div className="flex items-center gap-2 text-white">
+                <Loader2 className="h-6 w-6 animate-spin" />
+                <span className="text-lg font-medium">로딩 중...</span>
+              </div>
+            </div>
+          )}
           <Sidebar activeTab={activeTab} onTabChange={handleTabChange} />
           <main className="flex-1 p-6">
             <div className="sticky top-0 bg-white z-10 border-b border-gray-200">
@@ -64,7 +74,7 @@ function App() {
                         }`}
 
                     >
-                    {/*<Home className="h-5 w-5" />*/}
+
                       <span>파티 리스트</span>
                     </TabsTrigger>
                     <TabsTrigger
@@ -76,7 +86,7 @@ function App() {
                         }`}
                     >
 
-                    {/*<Users className="h-5 w-5" />*/}
+
                       <span>캐릭터 목록</span>
                     </TabsTrigger>
                     <TabsTrigger
@@ -89,8 +99,8 @@ function App() {
                     >
 
 
-                    {/*<PlusCircle className="h-5 w-5" />*/}
-                      <span>파티 추가</span>
+
+                      <span>파티 관리</span>
                     </TabsTrigger>
                   </TabsList>
                   <TabsContent value="parties">
