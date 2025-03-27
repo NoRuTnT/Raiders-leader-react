@@ -1,11 +1,6 @@
 "use client"
 
 import {useState, useMemo, useEffect} from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import { X } from "lucide-react"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,8 +14,10 @@ import {
 import { useCharacterStore } from "@/lib/stores/characterStore"
 import { usePartyStore } from "@/lib/stores/partyStore"
 import { useDungeonStore } from "@/lib/stores/dungeonStore"
+import { useAppStore } from "@/lib/stores/appStore"
 import { toast } from "sonner"
 import type {Party} from "@/lib/types"
+import { PartyCard } from "@/components/party-card"
 
 
 
@@ -28,6 +25,7 @@ export function PartyList() {
     const { characters } = useCharacterStore()
     const { parties= [], getParty } = usePartyStore()
     const { dungeons } = useDungeonStore()
+    const { setEditingParty } = useAppStore()
     const [deleteConfirmation, setDeleteConfirmation] = useState<number | null>(null)
     const [showOnlyWaiting, setShowOnlyWaiting] = useState(false)
 
@@ -65,6 +63,10 @@ export function PartyList() {
         }
     }
 
+    const handleEditParty = (party: Party) => {
+        setEditingParty(party)
+    }
+
     const filteredParties = useMemo(() => {
         if (!Array.isArray(parties)) {
             return [];
@@ -86,11 +88,11 @@ export function PartyList() {
 
     function calculateAverageFame(memberIds: string[]): number {
         const validFameValues = memberIds
-            .map((id) => characters.find((char) => char.characterId === id)?.fame) // 캐릭터의 명성을 찾음
-            .filter((fame) => fame !== undefined) as number[]; // 유효한 명성 값만 유지
+            .map((id) => characters.find((char) => char.characterId === id)?.fame)
+            .filter((fame) => fame !== undefined) as number[];
 
-        const totalFame = validFameValues.reduce((sum, fame) => sum + fame, 0); // 합산
-        const averageFame = validFameValues.length > 0 ? totalFame / validFameValues.length : 0; // 평균 계산
+        const totalFame = validFameValues.reduce((sum, fame) => sum + fame, 0);
+        const averageFame = validFameValues.length > 0 ? totalFame / validFameValues.length : 0;
 
         return averageFame;
 
@@ -133,56 +135,16 @@ export function PartyList() {
                         {groupedParties[dungeon.dungeonId]?.map((party,index) => {
                             const partyWithCharacters = getParty(party.partyId)
                             return (
-                                <Card key={party.partyId} className={party.progress === "DONE" ? "bg-green-50" : ""}>
-                                    <CardHeader className="pb-2">
-                                        <div className="flex items-center justify-between">
-                                            <CardTitle>{index+1}</CardTitle>
-                                            <div className="flex items-center gap-2">
-                                                <Badge variant="outline">평균 명성: {calculateAverageFame(party.memberIds)}</Badge>
-                                                <Checkbox
-
-                                                    checked={party.progress === "DONE"}
-                                                    onCheckedChange={() =>
-
-                                                        handleUpdateProgress(party, party.progress === "DONE" ? "WAITING" : "DONE")
-                                                    }
-                                                    className="h-5 w-5 border border-gray-300 rounded-sm bg-white checked:bg-blue-500 checked:border-transparent"
-
-                                                >
-                                                    <svg
-                                                        className="h-4 w-4 text-white"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        viewBox="0 0 20 20"
-                                                        fill="currentColor"
-                                                    >
-                                                        <path
-                                                            fillRule="evenodd"
-                                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-3-3a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                                            clipRule="evenodd"
-                                                        />
-                                                    </svg>
-
-                                                </Checkbox>
-                                                <Button variant="ghost" size="icon" onClick={() => setDeleteConfirmation(party.partyId)}>
-                                                    <X className="h-4 w-4" />
-                                                </Button>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {partyWithCharacters.members.map((member) => (
-                                                <div key={member.characterId} className="flex items-center gap-2 p-2 border rounded-md">
-                                                    <div className="min-w-0">
-                                                        <p className="font-medium truncate">{member.characterName}</p>
-                                                        <p className="text-xs text-muted-foreground">명성: {member.fame}</p>
-                                                        <p className="text-xs text-muted-foreground">{member.adventureName}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </CardContent>
-                                </Card>
+                                <PartyCard
+                                    key={party.partyId}
+                                    party={party}
+                                    partyNumber={index + 1}
+                                    members={partyWithCharacters.members}
+                                    averageFame={calculateAverageFame(party.memberIds)}
+                                    onDelete={(partyId) => setDeleteConfirmation(partyId)}
+                                    onUpdateProgress={handleUpdateProgress}
+                                    onEdit={handleEditParty}
+                                />
                             )
                         })}
                     </div>
