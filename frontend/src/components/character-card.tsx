@@ -11,6 +11,11 @@ interface CharacterCardProps {
 }
 
 export function CharacterCard({ character }: CharacterCardProps) {
+
+    const isBuffClass = (jobGrowName: string) => {
+        return ["眞 크루세이더", "眞 뮤즈", "眞 인챈트리스"].includes(jobGrowName)
+    }
+
     const [{ isDragging }, drag] = useDrag(() => ({
         type: "character",
         item: character,
@@ -22,7 +27,7 @@ export function CharacterCard({ character }: CharacterCardProps) {
     const setRef = React.useCallback(
         (node: HTMLDivElement | null) => {
             if (node) {
-                drag(node); // drag 함수를 DOM 요소에 연결
+                drag(node);
             }
         },
         [drag]
@@ -39,7 +44,14 @@ export function CharacterCard({ character }: CharacterCardProps) {
                         className="w-24 h-24 rounded-full object-cover"
                     />
                     <div>
-                        <h4 className="font-medium">{character.characterName}</h4>
+                        <div className="flex items-center gap-1">
+                            <p className="font-medium">{character.characterName}</p>
+                            {isBuffClass(character.jobGrowName) && (
+                                <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-800">
+                                    버퍼
+                                </Badge>
+                            )}
+                        </div>
                         <div className="flex items-center gap-2 mt-1">
                             <Badge variant="outline" className="text-xs">
                                 Lv.{character.level}
