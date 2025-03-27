@@ -11,14 +11,16 @@ import { Badge } from "@/components/ui/badge"
 import { usePartyStore } from "@/lib/stores/partyStore"
 import { useDungeonStore } from "@/lib/stores/dungeonStore"
 import { useCharacterStore } from "@/lib/stores/characterStore"
+import { useAppStore } from "@/lib/stores/appStore"
 import { toast } from "sonner"
-import { Pencil, Trash2,ChevronDown, ChevronUp } from 'lucide-react'
+import {Pencil, Trash2, ChevronDown, ChevronUp, Save} from 'lucide-react'
 import type { Character,Dungeon } from "@/lib/types"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 
 export function PartyAdd() {
-    const { addPartyStore } = usePartyStore()
+    const { addPartyStore, updatePartyStore } = usePartyStore()
+    const { editingParty, setEditingParty } = useAppStore()
     const { dungeons, addDungeonStore } = useDungeonStore()
     const { characters } = useCharacterStore()
     const [selectedDungeon, setSelectedDungeon] = useState<string | null>(null)
@@ -28,11 +30,40 @@ export function PartyAdd() {
     const [isDungeonListOpen, setIsDungeonListOpen] = useState(false)
     const [editingDungeon, setEditingDungeon] = useState<Dungeon | null>(null)
     const [collapsedAdventures, setCollapsedAdventures] = useState<Record<string, boolean>>({})
+    const isEditMode = !!editingParty
+
+    //모험단별 캐릭터정렬
+    const sortedAdventureGroups = React.useMemo(() => {
+        const groups = groupCharactersByAdventureName(characters)
+
+        Object.keys(groups).forEach((adventureName) => {
+            groups[adventureName].sort((a, b) => b.fame - a.fame)
+        })
+
+        return groups
+    }, [characters])
 
 
+    // 수정 모드일 때 초기 데이터 로드
     useEffect(() => {
-        console.log('Rendered partyMembers:', partyMembers);
-    }, [partyMembers]);
+        if (editingParty) {
+            setSelectedDungeon(String(editingParty.dungeonId))
+
+            const newPartyMembers: (string | null)[] = [null, null, null, null]
+            editingParty.memberIds.forEach((memberId, index) => {
+                if (index < 4) {
+                    newPartyMembers[index] = memberId
+                }
+            })
+
+            setPartyMembers(newPartyMembers)
+        } else {
+            // 편집 모드가 아닐 때는 초기화
+            setSelectedDungeon(null)
+            setPartyMembers([null, null, null, null])
+        }
+    }, [editingParty])
+
 
     const toggleAdventureCollapse = (adventureName: string) => {
         setCollapsedAdventures((prev) => ({
@@ -67,19 +98,36 @@ export function PartyAdd() {
         }
 
         try {
-            await addPartyStore({
-                dungeonId: Number(selectedDungeon),
-                memberIds: validMemberIds,
-                progress: "WAITING",
-            })
-            toast("파티가 추가되었습니다.")
+            if (isEditMode) {
+                await updatePartyStore({
+                    ...editingParty,
+                    dungeonId: Number(selectedDungeon),
+                    memberIds: validMemberIds,
+                })
+                toast("파티가 수정되었습니다.")
+            } else {
+                // 새 파티 추가
+                await addPartyStore({
+                    dungeonId: Number(selectedDungeon),
+                    memberIds: validMemberIds,
+                    progress: "WAITING",
+                })
+                toast("파티가 추가되었습니다.")
+            }
 
             setSelectedDungeon(null)
             setPartyMembers([null, null, null, null])
+            setEditingParty(null)
 
         } catch (error) {
             toast("파티 추가 중 오류가 발생했습니다.")
         }
+    }
+
+    const handleCancelEdit = () => {
+        setEditingParty(null)
+        setSelectedDungeon(null)
+        setPartyMembers([null, null, null, null])
     }
 
     const handleAddDungeon = async () => {
@@ -157,14 +205,14 @@ export function PartyAdd() {
         newPartyMembers[index] = null
         setPartyMembers(newPartyMembers)
     }
-    console.log('Dungeons:', dungeons);
 
 
 
     return (
         <div className="flex gap-6">
-            <div className="flex-1 space-y-6 sticky top-0 self-start"
-                 style={{ height: "100vh" }}
+            <div
+                className={`flex-1 space-y-6 sticky top-0 self-start ${isEditMode ? "p-4 rounded-lg border-2 border-green-800" : ""}`}
+                style={{ height: "100vh" }}
             >
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
@@ -238,12 +286,32 @@ export function PartyAdd() {
                                 </DialogContent>
                         </Dialog>
                     </div>
-                    <Button onClick={handleSave}>저장</Button>
+                    <div className="flex gap-2">
+                        {isEditMode && (
+                            <Button variant="outline" onClick={handleCancelEdit}>
+                                취소
+                            </Button>
+                        )}
+                        <Button onClick={handleSave}>
+                            {isEditMode ? (
+                                <>
+                                    <Save className="h-4 w-4 mr-2" />
+                                    수정
+                                </>
+                            ) : (
+                                "저장"
+                            )}
+                        </Button>
+                    </div>
                 </div>
 
                 <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                        <h3 className="text-lg font-medium">파티 구성</h3>
+                        <h3 className="text-lg font-medium">
+                            {isEditMode ? "파티 수정" : "파티 구성"}
+                            {isEditMode && <Badge className="ml-2 bg-green-500 text-white">수정 모드</Badge>}
+
+                        </h3>
                         <Badge variant="outline" className="text-sm">
                             평균 명성: {calculateAverageFame()}
                         </Badge>
@@ -268,7 +336,7 @@ export function PartyAdd() {
                 <div className="overflow-y-auto pr-2"
                      style={{ maxHeight: "calc(100vh - 2rem)"}}
                              >
-                    {Object.entries(groupCharactersByAdventureName(characters)).map(([adventureName, chars]) => (
+                    {Object.entries(sortedAdventureGroups).map(([adventureName, chars]) => (
                         <Collapsible
                             key={adventureName}
                             open={!collapsedAdventures[adventureName]}
