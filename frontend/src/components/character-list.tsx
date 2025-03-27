@@ -1,17 +1,17 @@
 "use client"
 
 import type React from "react"
-import { useState, useEffect, useCallback } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useState, useCallback } from "react"
+import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle, DialogClose} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogOverlay, DialogTitle} from "@/components/ui/dialog"
 import type { Character } from "@/lib/types"
 import { Badge } from "@/components/ui/badge"
 import { getCharacterList, getCharacterInfo, getCharacterSpringApi, refreshCharacterInfo } from "@/lib/api"
 import { useCharacterStore } from "@/lib/stores/characterStore"
 import { toast } from "sonner";
-import { RefreshCw, ChevronDown, ChevronUp, X } from "lucide-react"
+import { RefreshCw, ChevronDown, ChevronUp } from "lucide-react"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 
 
@@ -36,6 +36,10 @@ export function CharacterList() {
         groups[adventureName].push(character)
         return groups
     }, {})
+
+    Object.keys(adventureGroups).forEach((adventureName) => {
+        adventureGroups[adventureName].sort((a, b) => b.fame - a.fame)
+    })
 
     const toggleAdventureCollapse = (adventureName: string) => {
         setCollapsedAdventures((prev) => ({
@@ -135,23 +139,38 @@ export function CharacterList() {
             {/* 검색 결과 모달 */}
             <Dialog open={isSearchModalOpen} onOpenChange={setIsSearchModalOpen}>
                 <DialogOverlay className="fixed inset-0 bg-black/80" />
-                    <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 shadow-lg z-50"
+                    <DialogContent className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg p-6 shadow-lg z-50 max-w-md w-full max-h-[80vh] overflow-y-auto"
                     >
                         <DialogHeader>
                             <DialogTitle>검색 결과</DialogTitle>
                         </DialogHeader>
-                        <div className="mt-4 space-y-2">
-                            {searchResults.map((result) => (
-                                <Button
-                                    key={result.characterId}
-                                    variant="outline"
-                                    className="w-full justify-start"
-                                    onClick={() => handleCharacterSelect(result.serverId, result.characterId, result.characterName)}
-                                    disabled={isLoading}
-                                >
-                                    {result.characterName} ({result.serverId})
-                                </Button>
-                            ))}
+                        <div className="mt-4">
+                            {searchResults.length === 0 ? (
+                                <p className="text-center text-muted-foreground">검색 결과가 없습니다.</p>
+                            ) : (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {searchResults.map((result) => (
+                                        <Button
+                                            key={result.characterId}
+                                            variant="outline"
+                                            className="flex flex-col items-center p-4 h-auto"
+                                            onClick={() => handleCharacterSelect(result.serverId, result.characterId, result.characterName)}
+                                            disabled={isLoading}
+                                        >
+                                            <img
+                                                src={`https://img-api.neople.co.kr/df/servers/${result.serverId}/characters/${result.characterId}?zoom=3`}
+                                                alt={result.characterName}
+                                                className="w-40 h-40 rounded-full object-cover mb-2"
+                                            />
+                                            <div className="flex flex-col items-center">
+                                                <span className="font-medium text-base">{result.characterName}</span>
+                                                <span className="text-sm text-muted-foreground">서버:{result.serverId} </span>
+                                                <span className="text-sm text-muted-foreground">{result.jobGrowName} </span>
+                                            </div>
+                                        </Button>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </DialogContent>
             </Dialog>
