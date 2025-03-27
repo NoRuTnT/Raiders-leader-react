@@ -1,5 +1,8 @@
+"use client"
+
 import { Home, Users, PlusCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useAppStore } from "@/lib/stores/appStore"
 import type React from "react";
 
 interface SidebarProps {
@@ -8,6 +11,18 @@ interface SidebarProps {
 }
 
 export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
+    const setEditingParty = useAppStore((state) => state.setEditingParty)
+
+    const handleTabChange = (tab: string) => {
+        // 편집 모드 초기화
+        if (tab === "party-add" && activeTab !== "party-add") {
+            setEditingParty(null)
+        } else if (tab !== "party-add") {
+            setEditingParty(null)
+        }
+        onTabChange(tab)
+    }
+
     return (
         <div className="w-20 bg-muted border-r flex flex-col items-center py-6 gap-6">
             <img
@@ -22,7 +37,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
                 className={`rounded-full w-10 h-10 ${
                     activeTab === "parties" ? "bg-primary text-primary-foreground shadow-md" : ""
                 }`}
-                onClick={() => onTabChange("parties")}
+                onClick={() => handleTabChange("parties")}
             >
                 <Home className="h-6 w-6" />
                 <span className="sr-only">파티 리스트</span>
@@ -33,7 +48,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
                 className={`rounded-full w-10 h-10 ${
                     activeTab === "characters" ? "bg-primary text-primary-foreground shadow-md" : ""
                 }`}
-                onClick={() => onTabChange("characters")}
+                onClick={() => handleTabChange("characters")}
             >
                 <Users className="h-6 w-6" />
                 <span className="sr-only">캐릭터</span>
@@ -44,7 +59,7 @@ export function Sidebar({ activeTab, onTabChange }: SidebarProps) {
                 className={`rounded-full w-10 h-10 ${
                     activeTab === "party-add" ? "bg-primary text-primary-foreground shadow-md" : ""
                 }`}
-                onClick={() => onTabChange("party-add")}
+                onClick={() => handleTabChange("party-add")}
             >
                 <PlusCircle className="h-6 w-6" />
                 <span className="sr-only">파티 추가</span>
