@@ -8,6 +8,7 @@ interface PartyStore {
     parties: Party[]
     isLoading: boolean
     error: string | null
+    editingParty: Party | null
     fetchPartyStore: () => Promise<void>
     addPartyStore: (party: Omit<Party, "partyId">) => Promise<void>
     updatePartyStore: (party: Party) => Promise<void>
@@ -15,7 +16,6 @@ interface PartyStore {
     getParty: (partyId: number) => Party & { members: Character[] }
     resetStore: () => void
     setPartyStore: (parties: Party[]) => void
-
 }
 
 
@@ -23,6 +23,7 @@ export const usePartyStore = create<PartyStore>((set, get) => ({
     parties: [],
     isLoading: false,
     error: null,
+    editingParty: null,
 
     resetStore: () => {
         set({ parties: [], isLoading: false, error: null })
@@ -77,6 +78,7 @@ export const usePartyStore = create<PartyStore>((set, get) => ({
 
             set((state) => ({
                 parties: state.parties.map((p) => (p.partyId === party.partyId ? party : p)),
+                editingParty: null,
             }))
 
 
