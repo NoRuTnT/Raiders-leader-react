@@ -1,9 +1,12 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import App from './app/App';
+import { render, screen } from "@testing-library/react";
+import App from "@/app/App";
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+describe("App", () => {
+  it("renders the main tab navigation", () => {
+    render(<App />);
+
+    expect(screen.getByRole("tab", { name: "파티 리스트" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "캐릭터 목록" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "파티 관리" })).toBeInTheDocument();
+  });
 });
