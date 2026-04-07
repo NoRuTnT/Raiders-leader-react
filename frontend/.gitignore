@@ -284,3 +284,8 @@ fabric.properties
 /build/manifest.json
 /build/robots.txt
 /build/
+
+# Local Codex guidance and draft docs
+/AGENTS.md
+/docs/ai/
+/docs/skills-drafts/
