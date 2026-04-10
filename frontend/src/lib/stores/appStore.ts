@@ -1,22 +1,29 @@
-import { create } from "zustand"
-import type { Party } from "../types"
+import { create } from "zustand";
+import type { Party } from "../types";
+
+export type PrimaryTab = "main" | "larabot" | "party-management";
+export type PartyManagementTab = "overview" | "schedule" | "editor";
 
 interface AppStore {
-    activeTab: string
-    setActiveTab: (tab: string) => void
-    editingParty: Party | null
-    setEditingParty: (party: Party | null) => void
+  activePrimaryTab: PrimaryTab;
+  setActivePrimaryTab: (tab: PrimaryTab) => void;
+  activePartyManagementTab: PartyManagementTab;
+  setActivePartyManagementTab: (tab: PartyManagementTab) => void;
+  editingParty: Party | null;
+  setEditingParty: (party: Party | null) => void;
 }
 
 export const useAppStore = create<AppStore>((set) => ({
-    activeTab: "parties",
-    setActiveTab: (tab) => set({ activeTab: tab }),
-    editingParty: null,
-    setEditingParty: (party) => {
-        set({
-            editingParty: party,
-            activeTab: party ? "party-add" : "parties",
-        })
-    },
-}))
-
+  activePrimaryTab: "main",
+  setActivePrimaryTab: (tab) => set({ activePrimaryTab: tab }),
+  activePartyManagementTab: "overview",
+  setActivePartyManagementTab: (tab) => set({ activePartyManagementTab: tab }),
+  editingParty: null,
+  setEditingParty: (party) => {
+    set({
+      editingParty: party,
+      activePrimaryTab: "party-management",
+      activePartyManagementTab: party ? "editor" : "schedule",
+    });
+  },
+}));
