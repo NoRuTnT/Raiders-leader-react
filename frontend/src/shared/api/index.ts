@@ -1,11 +1,9 @@
+import { env } from "@/shared/config/env"
 import type {Character, Party, Dungeon, PartyRequestDTO} from "@/shared/types/domain"
-
-// const API_BASE_URL = "http://localhost:8080/api"
-const API_BASE_URL = "https://partycontrol.duckdns.org/api"
 
 // Character API
 export async function fetchCharacters(): Promise<Character[]> {
-    const response = await fetch(`${API_BASE_URL}/character`)
+    const response = await fetch(`${env.apiBaseUrl}/character`)
     if (!response.ok) {
         throw new Error("Failed to fetch characters")
     }
@@ -18,7 +16,7 @@ export async function fetchCharacters(): Promise<Character[]> {
 
 export async function getCharacterList(name: string): Promise<Character[]> {
     const response = await fetch(
-        `${API_BASE_URL}/neople/character?characterName=${name}`
+        `${env.apiBaseUrl}/neople/character?characterName=${name}`
 
     )
     if (!response.ok) {
@@ -34,7 +32,7 @@ export async function getCharacterList(name: string): Promise<Character[]> {
 
 export async function getCharacterInfo(serverId: string, characterId: string): Promise<Character> {
     const response = await fetch(
-        `${API_BASE_URL}/neople/character-info?serverId=${serverId}&characterId=${characterId}`
+        `${env.apiBaseUrl}/neople/character-info?serverId=${serverId}&characterId=${characterId}`
     )
     if (!response.ok) {
         throw new Error("Failed to fetch character details")
@@ -59,7 +57,7 @@ export async function getCharacterInfo(serverId: string, characterId: string): P
 
 export async function refreshCharacterInfo(serverId: string, characterId: string): Promise<Character> {
     const response = await fetch(
-        `${API_BASE_URL}/neople/character-info?serverId=${serverId}&characterId=${characterId}&refresh=true`,
+        `${env.apiBaseUrl}/neople/character-info?serverId=${serverId}&characterId=${characterId}&refresh=true`,
     )
     if (!response.ok) {
         throw new Error("Failed to refresh character details")
@@ -85,7 +83,7 @@ export async function refreshCharacterInfo(serverId: string, characterId: string
 
 export const getCharacterSpringApi= async (characterName: string) => {
     console.log("캐릭터이름:", characterName)
-    const response = await fetch(`${API_BASE_URL}/character/detail?characterName=${characterName}`, {
+    const response = await fetch(`${env.apiBaseUrl}/character/detail?characterName=${characterName}`, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -112,7 +110,7 @@ export const getCharacterSpringApi= async (characterName: string) => {
 
 
 export async function addCharacter(character: Character): Promise<Character> {
-    const response = await fetch(`${API_BASE_URL}/character`, {
+    const response = await fetch(`${env.apiBaseUrl}/character`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -133,7 +131,7 @@ export async function addCharacter(character: Character): Promise<Character> {
 
 
 export async function updateCharacter(character: Character): Promise<Character> {
-    const response = await fetch(`${API_BASE_URL}/character/${character.characterId}`, {
+    const response = await fetch(`${env.apiBaseUrl}/character/${character.characterId}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -181,7 +179,7 @@ function convertResponseToParty(apiData: any): Party {
 
 // Party API
 export async function getParties(): Promise<Party[]> {
-    const response = await fetch(`${API_BASE_URL}/party`)
+    const response = await fetch(`${env.apiBaseUrl}/party`)
     if (!response.ok) {
         throw new Error("Failed to fetch parties")
     }
@@ -196,7 +194,7 @@ export async function getParties(): Promise<Party[]> {
 export async function addParty(party: Omit<Party, "partyId">): Promise<Party> {
     const partyDTO = convertPartyToRequestDTO(party)
 
-    const response = await fetch(`${API_BASE_URL}/party`, {
+    const response = await fetch(`${env.apiBaseUrl}/party`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(partyDTO),
@@ -211,7 +209,7 @@ export async function addParty(party: Omit<Party, "partyId">): Promise<Party> {
 export async function updateParty(party: Party): Promise<Party> {
     const partyDTO = convertPartyToRequestDTO(party)
 
-    const response = await fetch(`${API_BASE_URL}/party/${party.partyId}`, {
+    const response = await fetch(`${env.apiBaseUrl}/party/${party.partyId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(partyDTO),
@@ -224,7 +222,7 @@ export async function updateParty(party: Party): Promise<Party> {
 }
 
 export async function deleteParty(partyId: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/party/${partyId}`, {
+    const response = await fetch(`${env.apiBaseUrl}/party/${partyId}`, {
         method: "DELETE",
     })
     if (!response.ok) {
@@ -235,7 +233,7 @@ export async function deleteParty(partyId: number): Promise<void> {
 
 // Dungeon API
 export async function getDungeons(): Promise<Dungeon[]> {
-    const response = await fetch(`${API_BASE_URL}/dungeon`)
+    const response = await fetch(`${env.apiBaseUrl}/dungeon`)
     if (!response.ok) {
         throw new Error("Failed to fetch dungeons")
     }
@@ -245,7 +243,7 @@ export async function getDungeons(): Promise<Dungeon[]> {
 }
 
 export async function addDungeon(dungeon: Omit<Dungeon, "dungeonId">): Promise<Dungeon> {
-    const response = await fetch(`${API_BASE_URL}/dungeon`, {
+    const response = await fetch(`${env.apiBaseUrl}/dungeon`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({dungeonName: dungeon.dungeonName}),
@@ -258,7 +256,7 @@ export async function addDungeon(dungeon: Omit<Dungeon, "dungeonId">): Promise<D
 }
 
 export async function updateDungeon(dungeon: Dungeon): Promise<Dungeon> {
-    const response = await fetch(`${API_BASE_URL}/dungeon/${dungeon.dungeonId}`, {
+    const response = await fetch(`${env.apiBaseUrl}/dungeon/${dungeon.dungeonId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ dungeonName: dungeon.dungeonName }),
@@ -271,7 +269,7 @@ export async function updateDungeon(dungeon: Dungeon): Promise<Dungeon> {
 }
 
 export async function deleteDungeon(dungeonId: number): Promise<void> {
-    const response = await fetch(`${API_BASE_URL}/dungeon/${dungeonId}`, {
+    const response = await fetch(`${env.apiBaseUrl}/dungeon/${dungeonId}`, {
         method: "DELETE",
     })
     if (!response.ok) {

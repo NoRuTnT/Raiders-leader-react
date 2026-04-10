@@ -3,6 +3,7 @@
 import type React from "react"
 import { useState, useCallback } from "react"
 import { useCharacterStore } from "@/entities/character/model/character-store"
+import { getCharacterImageUrl } from "@/shared/config/env"
 import { getCharacterList, getCharacterInfo, getCharacterSpringApi, refreshCharacterInfo } from "@/shared/api"
 import type { Character } from "@/shared/types/domain"
 import { Badge } from "@/shared/ui/badge"
@@ -158,7 +159,7 @@ export function CharacterList() {
                                             disabled={isLoading}
                                         >
                                             <img
-                                                src={`https://img-api.neople.co.kr/df/servers/${result.serverId}/characters/${result.characterId}?zoom=3`}
+                                                src={getCharacterImageUrl(result.serverId, result.characterId, 3)}
                                                 alt={result.characterName}
                                                 className="w-40 h-40 rounded-full object-cover mb-2"
                                             />
@@ -210,7 +211,7 @@ export function CharacterList() {
                                     >
                                         <div className="flex flex-col items-center p-4">
                                             <img
-                                                src={`https://img-api.neople.co.kr/df/servers/${character.serverId}/characters/${character.characterId}?zoom=1`}
+                                                src={getCharacterImageUrl(character.serverId, character.characterId, 1)}
                                                 alt={character.characterName}
                                                 className="w-32 h-32 rounded-full object-cover mb-2"
                                             />
@@ -259,7 +260,7 @@ export function CharacterList() {
                         <div className="mt-4 space-y-2">
                             <div className="flex justify-center mb-4">
                                 <img
-                                    src={`https://img-api.neople.co.kr/df/servers/${selectedCharacter.serverId}/characters/${selectedCharacter.characterId}?zoom=1`}
+                                    src={getCharacterImageUrl(selectedCharacter.serverId, selectedCharacter.characterId, 1)}
                                     alt={selectedCharacter.characterName}
                                     className="w-32 h-32 rounded-full object-cover"
                                 />

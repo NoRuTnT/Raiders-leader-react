@@ -7,6 +7,7 @@ import { useCharacterStore } from "@/entities/character/model/character-store"
 import { useDungeonStore } from "@/entities/dungeon/model/dungeon-store"
 import { usePartyStore } from "@/entities/party/model/party-store"
 import { CharacterCard } from "@/features/character/ui/character-card"
+import { getCharacterImageUrl } from "@/shared/config/env"
 import { Badge } from "@/shared/ui/badge"
 import { Button } from "@/shared/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/shared/ui/collapsible"
@@ -413,7 +414,7 @@ function PartySlot({ memberId, characters, onDrop, onRemove }: PartySlotProps) {
                 <div className="w-full">
                     <div className="flex items-center gap-2">
                         <img
-                            src={`https://img-api.neople.co.kr/df/servers/${member.serverId}/characters/${member.characterId}?zoom=3`}
+                            src={getCharacterImageUrl(member.serverId, member.characterId, 3)}
                             alt={member.characterName}
                             className="w-24 h-24 rounded-full object-cover"
                         />

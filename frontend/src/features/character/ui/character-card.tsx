@@ -1,6 +1,7 @@
 "use client"
 
 import { useDrag } from "react-dnd"
+import { getCharacterImageUrl } from "@/shared/config/env"
 import type { Character } from "@/shared/types/domain"
 import { Badge } from "@/shared/ui/badge"
 import { Card, CardContent } from "@/shared/ui/card"
@@ -39,7 +40,7 @@ export function CharacterCard({ character }: CharacterCardProps) {
             <CardContent className="p-4">
                 <div className="flex items-center gap-3">
                     <img
-                        src={`https://img-api.neople.co.kr/df/servers/${character.serverId}/characters/${character.characterId}?zoom=3`}
+                        src={getCharacterImageUrl(character.serverId, character.characterId, 3)}
                         alt={character.characterName}
                         className="w-24 h-24 rounded-full object-cover"
                     />
