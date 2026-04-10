@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/sonner"
+import { Toaster } from "@/shared/ui/sonner"
 import { ReactNode } from "react";
 
 interface RootLayoutProps {

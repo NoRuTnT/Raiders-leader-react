@@ -5,13 +5,13 @@ import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { LarabotPage } from "@/components/larabot-page";
-import { MainPage } from "@/components/main-page";
-import { PartyManagementPage } from "@/components/party-management-page";
-import { useCharacterStore } from "@/lib/stores/characterStore";
-import { useDungeonStore } from "@/lib/stores/dungeonStore";
-import { usePartyStore } from "@/lib/stores/partyStore";
-import { useAppStore, type PartyManagementTab } from "@/lib/stores/appStore";
+import { LarabotPage } from "@/pages/larabot/ui/larabot-page";
+import { MainPage } from "@/pages/main/ui/main-page";
+import { PartyManagementPage } from "@/pages/party-management/ui/party-management-page";
+import { useCharacterStore } from "@/entities/character/model/character-store";
+import { useDungeonStore } from "@/entities/dungeon/model/dungeon-store";
+import { usePartyStore } from "@/entities/party/model/party-store";
+import { useAppStore, type PartyManagementTab } from "@/entities/app/model/app-store";
 
 const primaryTabs = [
   { value: "main", label: "메인페이지" },

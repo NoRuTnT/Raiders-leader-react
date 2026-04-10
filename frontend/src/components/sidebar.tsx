@@ -1,8 +1,8 @@
 "use client"
 
 import { Home, Users, PlusCircle } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useAppStore } from "@/lib/stores/appStore"
+import { useAppStore } from "@/entities/app/model/app-store"
+import { Button } from "@/shared/ui/button"
 import type React from "react";
 
 interface SidebarProps {
