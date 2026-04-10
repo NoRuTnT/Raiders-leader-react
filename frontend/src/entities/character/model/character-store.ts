@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { useAppStore } from "@/entities/app/model/app-store"
 import { fetchCharacters, addCharacter, updateCharacter } from "@/shared/api"
 import type { Character } from "@/shared/types/domain"
 
@@ -47,6 +48,14 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     addCharacterStore: async (character) => {
         set({ isLoading: true, error: null })
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                set((state) => ({
+                    characters: state.characters.some((item) => item.characterId === character.characterId)
+                        ? state.characters
+                        : [...state.characters, character],
+                }))
+                return
+            }
             const newCharacter = await addCharacter(character)
             set((state) => ({ characters: [...state.characters, newCharacter] }))
         } catch (error) {
@@ -59,6 +68,14 @@ export const useCharacterStore = create<CharacterStore>((set, get) => ({
     updateCharacterStore: async (character) => {
         set({ isLoading: true, error: null })
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                set((state) => ({
+                    characters: state.characters.map((c) =>
+                        c.characterId === character.characterId ? character : c,
+                    ),
+                }))
+                return
+            }
             const updatedCharacter = await updateCharacter(character)
             set((state) => ({
                 characters: state.characters.map((c) =>

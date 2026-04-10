@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { Party } from "@/shared/types/domain";
 
 export type PrimaryTab = "main" | "larabot" | "party-management";
-export type PartyManagementTab = "overview" | "schedule" | "editor";
+export type PartyManagementTab = "overview" | "characters" | "schedule" | "editor";
 
 interface AppStore {
   activePrimaryTab: PrimaryTab;
@@ -11,6 +11,8 @@ interface AppStore {
   setActivePartyManagementTab: (tab: PartyManagementTab) => void;
   editingParty: Party | null;
   setEditingParty: (party: Party | null) => void;
+  isUsingMockData: boolean;
+  setIsUsingMockData: (value: boolean) => void;
 }
 
 export const useAppStore = create<AppStore>((set) => ({
@@ -19,6 +21,8 @@ export const useAppStore = create<AppStore>((set) => ({
   activePartyManagementTab: "overview",
   setActivePartyManagementTab: (tab) => set({ activePartyManagementTab: tab }),
   editingParty: null,
+  isUsingMockData: false,
+  setIsUsingMockData: (value) => set({ isUsingMockData: value }),
   setEditingParty: (party) => {
     set({
       editingParty: party,
