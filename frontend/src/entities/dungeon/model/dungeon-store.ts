@@ -1,5 +1,6 @@
 import { create } from "zustand"
 import { getDungeons, addDungeon,updateDungeon,deleteDungeon } from "@/shared/api"
+import { useAppStore } from "@/entities/app/model/app-store"
 import type { Dungeon } from "@/shared/types/domain"
 
 interface DungeonStore {
@@ -16,7 +17,7 @@ interface DungeonStore {
 }
 
 
-export const useDungeonStore = create<DungeonStore>((set) => ({
+export const useDungeonStore = create<DungeonStore>((set, get) => ({
 
 
     dungeons: [],
@@ -42,6 +43,11 @@ export const useDungeonStore = create<DungeonStore>((set) => ({
     addDungeonStore: async (dungeon) => {
         set({ isLoading: true, error: null })
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                const nextId = get().dungeons.reduce((max, item) => Math.max(max, item.dungeonId), 0) + 1
+                set((state) => ({ dungeons: [...state.dungeons, { ...dungeon, dungeonId: nextId }] }))
+                return
+            }
             const newDungeon = await addDungeon(dungeon)
             set((state) => ({ dungeons: [...state.dungeons, newDungeon] }))
         } catch (error) {
@@ -54,6 +60,12 @@ export const useDungeonStore = create<DungeonStore>((set) => ({
     updateDungeonStore: async (dungeon) => {
         set({ isLoading: true, error: null })
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                set((state) => ({
+                    dungeons: state.dungeons.map((d) => (d.dungeonId === dungeon.dungeonId ? dungeon : d)),
+                }))
+                return
+            }
             set((state) => ({
                 dungeons: state.dungeons.map((d) => (d.dungeonId === dungeon.dungeonId ? dungeon : d)),
             }))
@@ -76,6 +88,12 @@ export const useDungeonStore = create<DungeonStore>((set) => ({
     deleteDungeonStore: async (dungeonId) => {
         set({ isLoading: true, error: null })
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                set((state) => ({
+                    dungeons: state.dungeons.filter((d) => d.dungeonId !== dungeonId),
+                }))
+                return
+            }
             await deleteDungeon(dungeonId)
             set((state) => ({
                 dungeons: state.dungeons.filter((d) => d.dungeonId !== dungeonId),

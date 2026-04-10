@@ -1,5 +1,5 @@
 import { useMemo, type ReactNode } from "react";
-import { CalendarDays, ChevronRight, LayoutDashboard, Wrench } from "lucide-react";
+import { CalendarDays, ChevronRight, LayoutDashboard, UserRound, Wrench } from "lucide-react";
 import { useAppStore } from "@/entities/app/model/app-store";
 import { useCharacterStore } from "@/entities/character/model/character-store";
 import { useDungeonStore } from "@/entities/dungeon/model/dungeon-store";
@@ -71,7 +71,7 @@ export function PartyManagementOverview() {
     };
   }, [characters, dungeons, parties]);
 
-  const moveToPartyPage = (tab: "schedule" | "editor") => {
+  const moveToPartyPage = (tab: "characters" | "schedule" | "editor") => {
     setEditingParty(null);
     setActivePartyManagementTab(tab);
   };
@@ -86,23 +86,23 @@ export function PartyManagementOverview() {
           <h2 className="mt-4 text-4xl font-semibold tracking-tight text-[#3f2b1a] md:text-5xl">
             이번 주 파티 운영 현황을
             <br />
-            이 화면에서 빠르게 확인합니다
+            한 화면에서 빠르게 확인합니다
           </h2>
           <p className="mt-4 max-w-2xl text-base leading-7 text-[#6b5641] md:text-lg">
-            기존 메인 화면이 맡고 있던 파티 리스트와 스케줄링 흐름을 파티관리 내부로 옮겼습니다. 현재 상태를 먼저
-            보고, 필요한 작업은 아래 세부 화면으로 이동하는 구조를 사용합니다.
+            기존 메인 화면에 있던 파티 리스트와 스케줄링 흐름을 파티관리 내부로 옮겼습니다. 현재 상태를 먼저 보고,
+            필요한 작업은 아래 메뉴로 바로 이동할 수 있습니다.
           </p>
         </div>
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard label="총 파티 수" value={summary.partyCount} description="현재 등록된 전체 파티 개수" />
-        <SummaryCard label="이번 주 대기 파티" value={summary.waitingParties} description="아직 진행 체크가 되지 않은 파티" />
+        <SummaryCard label="대기 중 파티" value={summary.waitingParties} description="이번 주 진행 체크가 아직 남은 파티" />
         <SummaryCard label="완료 파티" value={summary.doneParties} description="이번 주 진행 완료 처리된 파티" />
         <SummaryCard
           label="보유 캐릭터 / 던전"
           value={`${summary.characterCount} / ${summary.dungeonCount}`}
-          description="파티 편성에 사용되는 기본 데이터"
+          description="파티 편성에 사용할 기본 데이터"
         />
       </section>
 
@@ -114,11 +114,17 @@ export function PartyManagementOverview() {
             </div>
             <div>
               <h3 className="text-xl font-semibold text-[#3f2b1a]">빠른 작업</h3>
-              <p className="text-sm text-[#6b5641]">파티관리 안에서 자주 사용하는 작업으로 바로 이동합니다.</p>
+              <p className="text-sm text-[#6b5641]">자주 사용하는 파티관리 작업으로 바로 이동합니다.</p>
             </div>
           </div>
 
           <div className="mt-6 grid gap-4">
+            <QuickActionCard
+              icon={<UserRound className="h-5 w-5" />}
+              title="캐릭터 리스트"
+              description="파티 편성에 사용할 캐릭터를 검색하고 등록합니다."
+              onClick={() => moveToPartyPage("characters")}
+            />
             <QuickActionCard
               icon={<CalendarDays className="h-5 w-5" />}
               title="파티 리스트 및 스케줄링"
@@ -139,14 +145,14 @@ export function PartyManagementOverview() {
           <div className="mt-5 space-y-4 text-sm leading-6 text-[#6b5641]">
             <div className="rounded-2xl bg-[#f9f0da] p-4">
               <p className="font-semibold text-[#3f2b1a]">최초 진입</p>
-              <p className="mt-1">파티관리 허브에서 현재 상태와 진입점을 먼저 확인합니다.</p>
+              <p className="mt-1">파티관리 허브에서 현재 현황과 진입 버튼을 먼저 확인합니다.</p>
             </div>
             <div className="rounded-2xl bg-[#f9f0da] p-4">
               <p className="font-semibold text-[#3f2b1a]">2차 구조</p>
               <p className="mt-1">파티 리스트 및 스케줄링, 파티 추가 / 수정</p>
             </div>
             <div className="rounded-2xl bg-[#f6e6be] p-4 text-[#70481a]">
-              <p className="font-semibold">재사용 기준</p>
+              <p className="font-semibold">이관 기준</p>
               <p className="mt-1">
                 기존 메인 로직은 파티관리 내부에서 재사용하고, 메인페이지는 Noru.gg 소개 랜딩으로 분리합니다.
               </p>

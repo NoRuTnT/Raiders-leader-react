@@ -1,4 +1,5 @@
 import { create } from "zustand"
+import { useAppStore } from "@/entities/app/model/app-store"
 import { useCharacterStore } from "@/entities/character/model/character-store"
 import { getParties, addParty, updateParty, deleteParty } from "@/shared/api"
 import type { Character, Party } from "@/shared/types/domain"
@@ -55,6 +56,10 @@ export const usePartyStore = create<PartyStore>((set, get) => ({
         const tempParty = { ...party, partyId: tempId }
 
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                set((state) => ({ parties: [...state.parties, tempParty] }))
+                return
+            }
             set((state) => ({ parties: [...state.parties, tempParty] }))
 
             const newParty = await addParty(party)
@@ -74,6 +79,13 @@ export const usePartyStore = create<PartyStore>((set, get) => ({
     updatePartyStore: async (party) => {
         set({ isLoading: true, error: null })
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                set((state) => ({
+                    parties: state.parties.map((p) => (p.partyId === party.partyId ? party : p)),
+                    editingParty: null,
+                }))
+                return
+            }
 
             set((state) => ({
                 parties: state.parties.map((p) => (p.partyId === party.partyId ? party : p)),
@@ -98,6 +110,12 @@ export const usePartyStore = create<PartyStore>((set, get) => ({
     deletePartyStore: async (partyId) => {
         set({ isLoading: true, error: null })
         try {
+            if (useAppStore.getState().isUsingMockData) {
+                set((state) => ({
+                    parties: state.parties.filter((p) => p.partyId !== partyId),
+                }))
+                return
+            }
             await deleteParty(partyId)
             set((state) => ({
                 parties: state.parties.filter((p) => p.partyId !== partyId),

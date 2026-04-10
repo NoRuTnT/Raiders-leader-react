@@ -9,6 +9,7 @@ import { useAppStore, type PartyManagementTab } from "@/entities/app/model/app-s
 import { useCharacterStore } from "@/entities/character/model/character-store";
 import { useDungeonStore } from "@/entities/dungeon/model/dungeon-store";
 import { usePartyStore } from "@/entities/party/model/party-store";
+import { mockCharacters, mockDungeons, mockParties } from "@/shared/mocks/party-management";
 import { LarabotPage } from "@/pages/larabot/ui/larabot-page";
 import { MainPage } from "@/pages/main/ui/main-page";
 import { PartyManagementPage } from "@/pages/party-management/ui/party-management-page";
@@ -22,7 +23,12 @@ const partyMenuItems: { value: PartyManagementTab; label: string; description: s
   {
     value: "overview",
     label: "파티관리 메인",
-    description: "운영 현황과 빠른 진입 동선을 확인합니다.",
+    description: "현재 현황과 빠른 진입 동선을 확인합니다.",
+  },
+  {
+    value: "characters",
+    label: "캐릭터 리스트",
+    description: "캐릭터를 검색하고 등록한 뒤 파티 편성에 사용합니다.",
   },
   {
     value: "schedule",
@@ -37,25 +43,69 @@ const partyMenuItems: { value: PartyManagementTab; label: string; description: s
 ];
 
 function App() {
-  const { activePrimaryTab, setActivePrimaryTab, setActivePartyManagementTab } = useAppStore();
-  const { fetchCharacterStore, isLoading: charactersLoading, error: charactersError } = useCharacterStore();
-  const { fetchPartyStore, isLoading: partiesLoading, error: partiesError } = usePartyStore();
-  const { fetchDungeonStore, isLoading: dungeonsLoading, error: dungeonsError } = useDungeonStore();
+  const {
+    activePrimaryTab,
+    setActivePrimaryTab,
+    setActivePartyManagementTab,
+    setIsUsingMockData,
+  } = useAppStore();
+  const {
+    fetchCharacterStore,
+    setCharacterStore,
+    characters,
+    isLoading: charactersLoading,
+    error: charactersError,
+  } = useCharacterStore();
+  const {
+    fetchPartyStore,
+    setPartyStore,
+    parties,
+    isLoading: partiesLoading,
+    error: partiesError,
+  } = usePartyStore();
+  const {
+    fetchDungeonStore,
+    setDungeonStore,
+    dungeons,
+    isLoading: dungeonsLoading,
+    error: dungeonsError,
+  } = useDungeonStore();
   const [isScrolled, setIsScrolled] = useState(false);
 
   useEffect(() => {
     const fetchInitialData = async () => {
       await Promise.all([fetchCharacterStore(), fetchPartyStore(), fetchDungeonStore()]);
+
+      const hasFetchError =
+        !!useCharacterStore.getState().error ||
+        !!usePartyStore.getState().error ||
+        !!useDungeonStore.getState().error;
+
+      const hasNoRemoteData =
+        useCharacterStore.getState().characters.length === 0 &&
+        usePartyStore.getState().parties.length === 0 &&
+        useDungeonStore.getState().dungeons.length === 0;
+
+      if (hasFetchError && hasNoRemoteData) {
+        setCharacterStore(mockCharacters);
+        setPartyStore(mockParties);
+        setDungeonStore(mockDungeons);
+        setIsUsingMockData(true);
+        toast("서버가 오프라인 상태라 더미 데이터로 파티관리를 표시합니다.");
+        return;
+      }
+
+      setIsUsingMockData(false);
     };
 
     fetchInitialData();
-  }, [fetchCharacterStore, fetchPartyStore, fetchDungeonStore]);
+  }, [fetchCharacterStore, fetchPartyStore, fetchDungeonStore, setCharacterStore, setDungeonStore, setIsUsingMockData, setPartyStore]);
 
   useEffect(() => {
-    if (charactersError) toast("charactersError");
-    if (partiesError) toast("partiesError");
-    if (dungeonsError) toast("dungeonsError");
-  }, [charactersError, partiesError, dungeonsError]);
+    if (charactersError && characters.length > 0) toast("캐릭터 일부를 불러오지 못했습니다.");
+    if (partiesError && parties.length > 0) toast("파티 일부를 불러오지 못했습니다.");
+    if (dungeonsError && dungeons.length > 0) toast("던전 일부를 불러오지 못했습니다.");
+  }, [characters, parties, dungeons, charactersError, partiesError, dungeonsError]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,14 +142,14 @@ function App() {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="min-h-screen bg-[linear-gradient(180deg,_#fff8eb_0%,_#f2e2bd_100%)] text-[#3f2b1a]">
-        {isLoading && (
+        {isLoading ? (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#382414]/40">
             <div className="flex items-center gap-3 rounded-full bg-white px-5 py-3 shadow-lg">
               <Loader2 className="h-5 w-5 animate-spin text-[#a86821]" />
               <span className="text-sm font-medium text-[#5e4328]">데이터를 불러오는 중입니다.</span>
             </div>
           </div>
-        )}
+        ) : null}
 
         <header className="sticky top-0 z-30">
           <div
