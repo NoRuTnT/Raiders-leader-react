@@ -14,11 +14,12 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/shared/ui/collapsible";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/shared/ui/dialog";
+import { FameValue } from "@/shared/ui/fame-value";
 import { Input } from "@/shared/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/ui/select";
 import type { Character, Dungeon } from "@/shared/types/domain";
 
-const SUPPORT_JOBS = ["인챈트리스", "뮤즈", "크루세이더", "세라핌"];
+const SUPPORT_JOBS = ["인챈트리스", "뮤즈", "크루세이더", "세라핌", "패러메딕"];
 
 export function PartyAdd() {
   const { addPartyStore, updatePartyStore } = usePartyStore();
@@ -343,7 +344,7 @@ export function PartyAdd() {
         </Dialog>
       </section>
 
-      <section className="rounded-[32px] border border-[#e7d5b2] bg-[#fffaf0] p-6 shadow-sm">
+      <section className="rounded-[32px] border border-[#e7d5b2] bg-[#fffaf0] p-6 shadow-sm xl:max-h-[calc(100vh-7.5rem)] xl:overflow-y-auto xl:pr-4">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-xl font-semibold text-[#3f2b1a]">등록된 캐릭터</h3>
@@ -449,10 +450,13 @@ function PartySlot({ slotNumber, memberId, characters, onDrop, onRemove }: Party
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <p className="truncate text-base font-semibold text-[#3f2b1a]">{member.characterName}</p>
-              {isSupport ? <Badge className="bg-[#e4f0ff] text-[#375d8b] hover:bg-[#e4f0ff]">버퍼</Badge> : null}
+              {isSupport ? <Badge className="bg-[#dcefdc] text-[#456445] hover:bg-[#dcefdc]">버퍼</Badge> : null}
             </div>
             <p className="mt-1 text-sm text-[#6b5641]">{member.jobGrowName}</p>
-            <p className="mt-2 text-sm font-medium text-[#9a641f]">명성 {member.fame.toLocaleString()}</p>
+            <p className="mt-1 text-xs text-[#8d775f]">{member.adventureName}</p>
+            <div className="mt-2">
+              <FameValue value={member.fame} textClassName="text-sm" />
+            </div>
           </div>
         </div>
       ) : (

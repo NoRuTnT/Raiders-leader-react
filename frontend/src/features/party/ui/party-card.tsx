@@ -5,10 +5,11 @@ import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/shared/ui/card";
 import { Checkbox } from "@/shared/ui/checkbox";
+import { FameValue } from "@/shared/ui/fame-value";
 import { Pencil, Trash2 } from "lucide-react";
 import { CharacterAvatar } from "@/features/character/ui/character-avatar";
 
-const SUPPORT_JOBS = ["인챈트리스", "뮤즈", "크루세이더", "세라핌"];
+const SUPPORT_JOB_KEYWORDS = ["인챈트리스", "뮤즈", "크루세이더", "세라핌", "패러메딕"];
 
 interface PartyCardProps {
   party: Party;
@@ -45,7 +46,9 @@ export function PartyCard({
               {isDone ? "완료" : "대기"}
             </Badge>
           </div>
-          <p className="mt-2 text-sm text-[#7b654d]">평균 명성 {Math.round(averageFame).toLocaleString()}</p>
+          <div className="mt-2">
+            <FameValue value={Math.round(averageFame)} textClassName="text-sm" />
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
@@ -68,27 +71,35 @@ export function PartyCard({
 
       <CardContent className="grid grid-cols-1 gap-3 px-5 pb-5 md:grid-cols-2">
         {members.map((member) => {
-          const isSupport = SUPPORT_JOBS.includes(member.jobGrowName);
+          const isSupport = SUPPORT_JOB_KEYWORDS.some((keyword) => member.jobGrowName.includes(keyword));
 
           return (
-            <div key={member.characterId} className="flex items-center gap-3 rounded-2xl border border-[#eddcb8] bg-white/90 p-3">
+            <div
+              key={member.characterId}
+              className={`flex items-center gap-3 rounded-2xl border p-3 ${
+                isSupport ? "border-[#d4e3d4] bg-[#f6fbf7]" : "border-[#eddcb8] bg-white/90"
+              }`}
+            >
               <CharacterAvatar
                 serverId={member.serverId}
                 characterId={member.characterId}
                 characterName={member.characterName}
-                size={52}
+                size={60}
               />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
                   <p className="truncate text-sm font-semibold text-[#3f2b1a]">{member.characterName}</p>
                   {isSupport ? (
-                    <Badge variant="secondary" className="bg-[#e4f0ff] text-[#375d8b]">
+                    <Badge variant="secondary" className="bg-[#dcefdc] text-[#456445]">
                       버퍼
                     </Badge>
                   ) : null}
                 </div>
                 <p className="mt-1 truncate text-xs text-[#6b5641]">{member.jobGrowName}</p>
-                <p className="mt-1 text-xs font-medium text-[#9a641f]">명성 {member.fame.toLocaleString()}</p>
+                <p className="mt-1 truncate text-xs text-[#8d775f]">{member.adventureName}</p>
+                <div className="mt-2">
+                  <FameValue value={member.fame} textClassName="text-xs" />
+                </div>
               </div>
             </div>
           );
