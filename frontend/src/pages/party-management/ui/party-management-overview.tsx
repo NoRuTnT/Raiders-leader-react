@@ -4,23 +4,40 @@ import { useAppStore } from "@/entities/app/model/app-store";
 import { useCharacterStore } from "@/entities/character/model/character-store";
 import { useDungeonStore } from "@/entities/dungeon/model/dungeon-store";
 import { usePartyStore } from "@/entities/party/model/party-store";
+import { CharacterCard } from "@/features/character/ui/character-card";
 
 function SummaryCard({
   label,
   value,
   description,
+  onClick,
 }: {
   label: string;
   value: string | number;
   description: string;
+  onClick?: () => void;
 }) {
-  return (
-    <div className="rounded-3xl border border-[#e7d5b2] bg-[#fffaf0] p-6 shadow-sm">
+  const content = (
+    <>
       <p className="text-sm font-medium text-[#8d775f]">{label}</p>
       <p className="mt-3 text-3xl font-semibold tracking-tight text-[#3f2b1a]">{value}</p>
       <p className="mt-2 text-sm text-[#6b5641]">{description}</p>
-    </div>
+    </>
   );
+
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        className="rounded-3xl border border-[#e7d5b2] bg-[#fffaf0] p-6 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-[#d5b98a] hover:shadow-md"
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return <div className="rounded-3xl border border-[#e7d5b2] bg-[#fffaf0] p-6 shadow-sm">{content}</div>;
 }
 
 function QuickActionCard({
@@ -71,6 +88,11 @@ export function PartyManagementOverview() {
     };
   }, [characters, dungeons, parties]);
 
+  const topCharacters = useMemo(
+    () => [...characters].sort((a, b) => b.fame - a.fame).slice(0, 3),
+    [characters],
+  );
+
   const moveToPartyPage = (tab: "characters" | "schedule" | "editor") => {
     setEditingParty(null);
     setActivePartyManagementTab(tab);
@@ -96,8 +118,18 @@ export function PartyManagementOverview() {
       </section>
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <SummaryCard label="총 파티 수" value={summary.partyCount} description="현재 등록된 전체 파티 개수" />
-        <SummaryCard label="대기 중 파티" value={summary.waitingParties} description="이번 주 진행 체크가 아직 남은 파티" />
+        <SummaryCard
+          label="총 파티 수"
+          value={summary.partyCount}
+          description="현재 등록된 전체 파티 개수"
+          onClick={() => moveToPartyPage("schedule")}
+        />
+        <SummaryCard
+          label="대기 중 파티"
+          value={summary.waitingParties}
+          description="이번 주 진행 체크가 아직 남은 파티"
+          onClick={() => moveToPartyPage("schedule")}
+        />
         <SummaryCard label="완료 파티" value={summary.doneParties} description="이번 주 진행 완료 처리된 파티" />
         <SummaryCard
           label="보유 캐릭터 / 던전"
@@ -141,22 +173,26 @@ export function PartyManagementOverview() {
         </div>
 
         <div className="rounded-[32px] border border-[#e7d5b2] bg-[#fffaf0] p-6 shadow-sm md:p-7">
-          <h3 className="text-xl font-semibold text-[#3f2b1a]">현재 파티관리 구조</h3>
-          <div className="mt-5 space-y-4 text-sm leading-6 text-[#6b5641]">
-            <div className="rounded-2xl bg-[#f9f0da] p-4">
-              <p className="font-semibold text-[#3f2b1a]">최초 진입</p>
-              <p className="mt-1">파티관리 허브에서 현재 현황과 진입 버튼을 먼저 확인합니다.</p>
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <h3 className="text-xl font-semibold text-[#3f2b1a]">캐릭터 명성 TOP 3</h3>
+              <p className="mt-1 text-sm text-[#6b5641]">현재 등록된 캐릭터 중 명성이 높은 순서대로 보여줍니다.</p>
             </div>
-            <div className="rounded-2xl bg-[#f9f0da] p-4">
-              <p className="font-semibold text-[#3f2b1a]">2차 구조</p>
-              <p className="mt-1">파티 리스트 및 스케줄링, 파티 추가 / 수정</p>
-            </div>
-            <div className="rounded-2xl bg-[#f6e6be] p-4 text-[#70481a]">
-              <p className="font-semibold">이관 기준</p>
-              <p className="mt-1">
-                기존 메인 로직은 파티관리 내부에서 재사용하고, 메인페이지는 Noru.gg 소개 랜딩으로 분리합니다.
-              </p>
-            </div>
+          </div>
+
+          <div className="mt-5 space-y-4">
+            {topCharacters.length > 0 ? (
+              topCharacters.map((character, index) => (
+                <div key={character.characterId} className="space-y-2">
+                  <p className="text-sm font-semibold text-[#8d775f]">{index + 1}위</p>
+                  <CharacterCard character={character} />
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl bg-[#f9f0da] p-4 text-sm text-[#6b5641]">
+                아직 등록된 캐릭터가 없습니다. 캐릭터 리스트에서 먼저 등록해보세요.
+              </div>
+            )}
           </div>
         </div>
       </section>

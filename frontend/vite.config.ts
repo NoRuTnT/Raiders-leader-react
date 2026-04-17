@@ -9,6 +9,25 @@ export default defineConfig({
       "@": path.resolve(__dirname, "src"),
     },
   },
+  server: {
+    proxy: {
+      "/api": {
+        target: "https://moonhub.kr",
+        changeOrigin: true,
+        secure: true,
+      },
+      "/actuator": {
+        target: "https://moonhub.kr",
+        changeOrigin: true,
+        secure: true,
+      },
+      "/lalabot": {
+        target: "https://moonhub.kr",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
+  },
   test: {
     globals: true,
     environment: "jsdom",

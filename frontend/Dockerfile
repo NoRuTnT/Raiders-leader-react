@@ -1,18 +1,19 @@
-FROM node:20.15.0
+FROM node:22-alpine AS builder
 
-
-WORKDIR /usr/src/app
-
+WORKDIR /app
 
 COPY package*.json ./
-
-
-RUN NODE_OPTIONS="--max-old-space-size=4096" npm install --no-audit --prefer-offline --no-cache
-
-
+RUN npm ci
 
 COPY . .
+RUN npm run build
 
+FROM node:22-alpine AS runner
 
-CMD ["npm", "start"]
-EXPOSE 3000
+WORKDIR /app
+
+RUN npm install -g serve
+
+COPY --from=builder /app/dist ./dist
+
+EXPOSE 3001
