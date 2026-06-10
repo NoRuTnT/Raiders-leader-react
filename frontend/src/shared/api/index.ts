@@ -1,6 +1,31 @@
 import { env } from "@/shared/config/env"
 import type {Character, Party, Dungeon, PartyRequestDTO} from "@/shared/types/domain"
 
+interface McpToolCallResponse {
+    jsonrpc: string
+    id: string
+    result: {
+        content?: Array<{
+            type?: string
+            text?: string
+        }>
+    } | null
+    error: {
+        code: number
+        message: string
+    } | null
+}
+
+export interface LogAnalysisRequest {
+    prompt: string
+}
+
+export interface LogAnalysisResult {
+    requestId: string
+    rawText: string
+    parsedData: unknown
+}
+
 // Character API
 export async function fetchCharacters(): Promise<Character[]> {
     const response = await fetch(`${env.apiBaseUrl}/character`)
@@ -274,5 +299,44 @@ export async function deleteDungeon(dungeonId: number): Promise<void> {
     })
     if (!response.ok) {
         throw new Error("Failed to delete dungeon")
+    }
+}
+
+export async function analyzeLogsWithMcp({ prompt }: LogAnalysisRequest): Promise<LogAnalysisResult> {
+    const response = await fetch(env.mcpServerUrl, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+        },
+        body: JSON.stringify({
+            jsonrpc: "2.0",
+            id: `log-analysis-${Date.now()}`,
+            method: "tools/call",
+            params: {
+                name: "analyze_ops_prompt",
+                arguments: {
+                    prompt,
+                },
+            },
+        }),
+    })
+
+    const data = (await response.json()) as McpToolCallResponse
+
+    if (!response.ok || data.error) {
+        throw new Error(data.error?.message ?? "MCP request failed")
+    }
+
+    const responseText = data.result?.content?.[0]?.text?.trim()
+
+    if (!responseText) {
+        throw new Error("MCP response did not include text content")
+    }
+
+    return {
+        requestId: data.id,
+        rawText: responseText,
+        parsedData: JSON.parse(responseText),
     }
 }

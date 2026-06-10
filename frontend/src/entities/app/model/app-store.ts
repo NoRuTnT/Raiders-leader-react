@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Party } from "@/shared/types/domain";
 
-export type PrimaryTab = "main" | "larabot" | "party-management";
+export type PrimaryTab = "main" | "larabot" | "party-management" | "log-analysis";
 export type PartyManagementTab = "overview" | "characters" | "schedule" | "editor";
 
 interface AppStore {
