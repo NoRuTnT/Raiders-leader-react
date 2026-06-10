@@ -9,6 +9,7 @@ import { useAppStore, type PartyManagementTab } from "@/entities/app/model/app-s
 import { useCharacterStore } from "@/entities/character/model/character-store";
 import { useDungeonStore } from "@/entities/dungeon/model/dungeon-store";
 import { usePartyStore } from "@/entities/party/model/party-store";
+import { LogAnalysisPage } from "@/pages/log-analysis/ui/log-analysis-page";
 import { mockCharacters, mockDungeons, mockParties } from "@/shared/mocks/party-management";
 import { LarabotPage } from "@/pages/larabot/ui/larabot-page";
 import { MainPage } from "@/pages/main/ui/main-page";
@@ -17,6 +18,7 @@ import { PartyManagementPage } from "@/pages/party-management/ui/party-managemen
 const primaryTabs = [
   { value: "main", label: "메인페이지" },
   { value: "larabot", label: "라라봇" },
+  { value: "log-analysis", label: "로그분석" },
 ] as const;
 
 const partyMenuItems: { value: PartyManagementTab; label: string; description: string }[] = [
@@ -131,6 +133,8 @@ function App() {
     switch (activePrimaryTab) {
       case "larabot":
         return <LarabotPage />;
+      case "log-analysis":
+        return <LogAnalysisPage />;
       case "party-management":
         return <PartyManagementPage />;
       case "main":
