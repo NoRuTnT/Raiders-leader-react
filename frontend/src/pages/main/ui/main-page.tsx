@@ -8,17 +8,6 @@ const HEALTH_CHECK_INTERVAL_MS = 60_000;
 
 const carouselItems = [
   {
-    id: "party-management",
-    eyebrow: "Party Management",
-    title: "파티관리에 들어가 이번 주 운영 흐름을 바로 정리합니다.",
-    description:
-      "생성된 파티 목록을 보고 진행 여부를 체크하고, 새 파티를 추가하거나 기존 구성을 수정할 수 있습니다.",
-    buttonLabel: "파티관리로 이동",
-    action: "party-management" as const,
-    imagePath: "/party-scheduling-hero.png",
-    imageAlt: "파티 스케줄링 서비스 소개 이미지",
-  },
-  {
     id: "larabot",
     eyebrow: "Larabot",
     title: "라라봇 페이지에서 보조 기능과 확장 영역을 준비합니다.",
@@ -33,19 +22,19 @@ const carouselItems = [
 
 const updates = [
   {
+    date: "2026.07.12",
+    title: "소개 페이지 업데이트",
+    description: "기술 스택, 활동, 프로젝트와 현재 관심사를 확인할 수 있는 소개 페이지를 추가했습니다.",
+  },
+  {
+    date: "2026.06.11",
+    title: "MCP 로그분석 서비스 업데이트",
+    description: "자연어 요청으로 운영 로그와 메트릭을 분석하고 결과를 요약해서 확인할 수 있습니다.",
+  },
+  {
     date: "2026.04.10",
     title: "Noru.gg 브랜딩 리뉴얼",
     description: "상단 로고와 메인페이지 톤을 갈색과 노란색의 파스텔 계열로 정비했습니다.",
-  },
-  {
-    date: "2026.04.09",
-    title: "메인 허브 구조 개편",
-    description: "메인페이지, 라라봇, 파티관리의 1차 구조를 정리하고 파티관리 내부 동선을 분리했습니다.",
-  },
-  {
-    date: "2026.04.07",
-    title: "프론트엔드 기반 정리",
-    description: "Vite 기반으로 마이그레이션하고 폴더 구조를 pages / features / entities / shared 기준으로 재배치했습니다.",
   },
 ];
 
@@ -67,6 +56,12 @@ const initialServiceHealth: ServiceHealthItem[] = [
   },
   {
     label: "Larabot",
+    status: "확인 중...",
+    tone: "bg-[#efe2bf] text-[#7b5a27]",
+    checkedAt: "첫 상태를 확인하고 있습니다.",
+  },
+  {
+    label: "Palworld Dedicated Server",
     status: "확인 중...",
     tone: "bg-[#efe2bf] text-[#7b5a27]",
     checkedAt: "첫 상태를 확인하고 있습니다.",
@@ -108,6 +103,7 @@ export function MainPage() {
       const results = await Promise.all([
         checkHealth(env.springHealthUrl, "Spring Server"),
         checkHealth(env.lalabotHealthUrl, "Lalabot"),
+        checkHealth(env.palworldHealthUrl, "Palworld Dedicated Server", true),
       ]);
 
       if (!isMounted) {
@@ -193,7 +189,7 @@ export function MainPage() {
               <ArrowRight className="h-4 w-4" />
             </button>
 
-            <div className="flex items-center gap-3">
+            {carouselItems.length > 1 ? <div className="flex items-center gap-3">
               <button
                 type="button"
                 aria-label="이전 카드"
@@ -225,7 +221,7 @@ export function MainPage() {
               >
                 {">"}
               </button>
-            </div>
+            </div> : null}
           </div>
         </div>
 
@@ -290,7 +286,7 @@ export function MainPage() {
   );
 }
 
-async function checkHealth(url: string, label: string): Promise<ServiceHealthItem> {
+async function checkHealth(url: string, label: string, acceptAnyOk = false): Promise<ServiceHealthItem> {
   try {
     const response = await fetch(url, {
       method: "GET",
@@ -301,7 +297,7 @@ async function checkHealth(url: string, label: string): Promise<ServiceHealthIte
 
     let healthState: HealthState = response.ok ? "healthy" : "unhealthy";
 
-    if (response.ok) {
+    if (response.ok && !acceptAnyOk) {
       const contentType = response.headers.get("content-type") ?? "";
       if (contentType.includes("application/json")) {
         const data = (await response.json()) as { status?: string };

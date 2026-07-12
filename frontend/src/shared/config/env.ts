@@ -9,6 +9,7 @@ const normalizedApiBaseUrl = apiBaseUrl.replace(/\/+$/, "");
 const appBaseUrl = normalizedApiBaseUrl.replace(/\/api$/, "");
 const springHealthUrl = import.meta.env.VITE_SPRING_HEALTH_URL ?? `${appBaseUrl}/actuator/health`;
 const lalabotHealthUrl = import.meta.env.VITE_LALABOT_HEALTH_URL ?? `${appBaseUrl}/lalabot/actuator/health`;
+const palworldHealthUrl = import.meta.env.VITE_PALWORLD_HEALTH_URL ?? `${appBaseUrl}/palworld/health`;
 const mcpServerUrl = import.meta.env.VITE_MCP_SERVER_URL ?? "/mcp";
 
 export const env = {
@@ -16,6 +17,7 @@ export const env = {
   neopleImageBaseUrl: neopleImageBaseUrl.replace(/\/+$/, ""),
   springHealthUrl: springHealthUrl.replace(/\/+$/, ""),
   lalabotHealthUrl: lalabotHealthUrl.replace(/\/+$/, ""),
+  palworldHealthUrl: palworldHealthUrl.replace(/\/+$/, ""),
   mcpServerUrl: mcpServerUrl.replace(/\/+$/, ""),
 };
 

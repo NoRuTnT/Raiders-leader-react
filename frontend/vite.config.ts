@@ -26,6 +26,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: true,
       },
+      "/palworld": {
+        target: "https://moonhub.kr",
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
   test: {
