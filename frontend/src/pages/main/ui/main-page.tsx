@@ -10,31 +10,49 @@ const carouselItems = [
   {
     id: "larabot",
     eyebrow: "Larabot",
-    title: "라라봇 페이지에서 보조 기능과 확장 영역을 준비합니다.",
+    title: "라라봇 프로젝트의 기능과 운영 경험을 확인하세요.",
     description:
-      "라라봇은 이 서버의 보조 서비스를 연결하는 공간입니다. 이후 안내와 도구를 위한 영역으로 확장합니다.",
-    buttonLabel: "라라봇으로 이동",
-    action: "larabot" as const,
+      "메신저 플랫폼에서 다양한 기능을 제공하는 라라봇의 개발 과정과 운영 경험을 소개 페이지에서 확인할 수 있습니다.",
+    buttonLabel: "소개에서 보기",
+    action: "about" as const,
     imagePath: "/hero-lalabot.png",
     imageAlt: "라라봇 서비스 소개 이미지",
+    href: undefined,
+  },
+  {
+    id: "velog",
+    eyebrow: "Technical Blog",
+    title: "배운 것을 기록하며 더 깊게 이해합니다.",
+    description:
+      "Samsung Cloud Platform과 인프라 기술을 학습하며 정리한 Velog 글을 통해, 문제를 해결하며 쌓아온 생각과 기록을 확인할 수 있습니다.",
+    buttonLabel: "Velog에서 보기",
+    action: "about" as const,
+    imagePath: "/hero-velog.png",
+    imageAlt: "클라우드 기술을 기록하는 개발자 블로그 소개 이미지",
+    href: "https://velog.io/@moonabcd/posts",
   },
 ] as const;
 
 const updates = [
   {
+    date: "2026.09.01",
+    title: "Knowledge Base 및 기술 용어 링크 추가",
+  },
+  {
+    date: "2026.09.01",
+    title: "소개 및 기술 블로그 연결 업데이트",
+  },
+  {
     date: "2026.07.12",
     title: "소개 페이지 업데이트",
-    description: "기술 스택, 활동, 프로젝트와 현재 관심사를 확인할 수 있는 소개 페이지를 추가했습니다.",
   },
   {
     date: "2026.06.11",
     title: "MCP 로그분석 서비스 업데이트",
-    description: "자연어 요청으로 운영 로그와 메트릭을 분석하고 결과를 요약해서 확인할 수 있습니다.",
   },
   {
     date: "2026.04.10",
     title: "Noru.gg 브랜딩 리뉴얼",
-    description: "상단 로고와 메인페이지 톤을 갈색과 노란색의 파스텔 계열로 정비했습니다.",
   },
 ];
 
@@ -152,6 +170,10 @@ export function MainPage() {
   );
 
   const handlePrimaryAction = () => {
+    if (activeItem.href) {
+      window.open(activeItem.href, "_blank", "noopener,noreferrer");
+      return;
+    }
     setActivePrimaryTab(activeItem.action);
   };
 
@@ -249,7 +271,6 @@ export function MainPage() {
               <div key={item.title} className="rounded-2xl bg-[#f9f0da] p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[#9a7a51]">{item.date}</p>
                 <p className="mt-2 text-sm font-semibold text-[#3f2b1a]">{item.title}</p>
-                <p className="mt-1 text-sm leading-6 text-[#6b5641]">{item.description}</p>
               </div>
             ))}
           </div>

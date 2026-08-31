@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import type { Party } from "@/shared/types/domain";
 
-export type PrimaryTab = "main" | "about" | "larabot" | "party-management" | "log-analysis";
+export type PrimaryTab = "main" | "about" | "knowledge-base" | "party-management" | "log-analysis";
 export type PartyManagementTab = "overview" | "characters" | "schedule" | "editor";
 
 interface AppStore {
   activePrimaryTab: PrimaryTab;
   setActivePrimaryTab: (tab: PrimaryTab) => void;
+  activeKnowledgeBaseSection: string | null;
+  setKnowledgeBaseSection: (sectionId: string | null) => void;
   activePartyManagementTab: PartyManagementTab;
   setActivePartyManagementTab: (tab: PartyManagementTab) => void;
   editingParty: Party | null;
@@ -18,6 +20,8 @@ interface AppStore {
 export const useAppStore = create<AppStore>((set) => ({
   activePrimaryTab: "main",
   setActivePrimaryTab: (tab) => set({ activePrimaryTab: tab }),
+  activeKnowledgeBaseSection: null,
+  setKnowledgeBaseSection: (sectionId) => set({ activeKnowledgeBaseSection: sectionId }),
   activePartyManagementTab: "overview",
   setActivePartyManagementTab: (tab) => set({ activePartyManagementTab: tab }),
   editingParty: null,

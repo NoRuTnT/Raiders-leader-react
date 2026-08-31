@@ -11,16 +11,16 @@ import { useDungeonStore } from "@/entities/dungeon/model/dungeon-store";
 import { usePartyStore } from "@/entities/party/model/party-store";
 import { LogAnalysisPage } from "@/pages/log-analysis/ui/log-analysis-page";
 import { mockCharacters, mockDungeons, mockParties } from "@/shared/mocks/party-management";
-import { LarabotPage } from "@/pages/larabot/ui/larabot-page";
 import { MainPage } from "@/pages/main/ui/main-page";
 import { AboutPage } from "@/pages/about/ui/about-page";
+import { KnowledgeBasePage } from "@/pages/knowledge-base/ui/knowledge-base-page";
 import { PartyManagementPage } from "@/pages/party-management/ui/party-management-page";
 import { AdminAccessGate } from "@/shared/ui/admin-access-gate";
 
 const primaryTabs = [
   { value: "main", label: "메인페이지" },
   { value: "about", label: "소개" },
-  { value: "larabot", label: "라라봇" },
+  { value: "knowledge-base", label: "Knowledge Base" },
   { value: "log-analysis", label: "로그분석" },
 ] as const;
 
@@ -136,8 +136,8 @@ function App() {
     switch (activePrimaryTab) {
       case "about":
         return <AboutPage />;
-      case "larabot":
-        return <LarabotPage />;
+      case "knowledge-base":
+        return <KnowledgeBasePage />;
       case "log-analysis":
         return <LogAnalysisPage />;
       case "party-management":

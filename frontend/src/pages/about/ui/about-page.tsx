@@ -1,22 +1,45 @@
 import { useState } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Github, Mail } from "lucide-react";
+import { useAppStore } from "@/entities/app/model/app-store";
+import { knowledgeHeadingTargets, knowledgeKeywordTargets } from "@/pages/knowledge-base/model/knowledge-base";
 
 const sections = [
   {
+    title: "■ Career.",
+    content: `2026.07 - 현재
+리버스아이티
+Samsung Cloud Platform 기술지원
+
+제한된 환경에서 축적한 문제 해결 역량
+외부망과 분리되어 AI 활용이 제한된 환경에서 정부·금융권·삼성 관계사·외부 고객의 다양한 기술 이슈를 지원했습니다. 정형화된 답을 적용하기보다 증상을 관찰하고 가능한 원인을 단계별로 검증하며 문제의 범위를 좁혀 해결해 왔습니다. 이 과정에서 네트워크, 클라우드 인프라, DataOps 등 여러 영역을 함께 살펴야 했고, 자연스럽게 폭넓은 기술 기반과 도메인 간 연결 역량을 쌓았습니다.
+AI에 의존하지 않고 축적한 문제 해결 경험과 폭넓은 도메인 지식은 오히려 AI를 더 정확하게 활용할 수 있는 기반이 되었습니다. AI의 성능이 높아질수록 중요한 것은 단순히 답을 얻는 방법보다 문제의 구조를 이해하고 적절한 아키텍처를 설계하는 역량이라고 생각합니다. 여러 기술 영역을 연결해 설계할 수 있는 기반 지식을 바탕으로, AI를 구현과 검증의 속도를 높이는 도구로 활용하고 있습니다.
+
+스스로 학습한 내용을 기록하며 쌓아온 지식
+Samsung Cloud Platform의 구조와 상품을 학습하며 개념과 사용 사례를 꾸준히 기록하고 있습니다. 학습 내용을 다시 정리하고 공유하는 과정으로 이해를 깊게 만들고, 실무에서 필요한 지식을 체계적으로 확장하고 있습니다.
+🔗 Velog 시리즈: https://velog.io/@moonabcd/series/Samsung-Cloud-Platform`,
+  },
+  {
     title: "■ Tech Stack.",
-    content: `Java
+    content: `Cloud
+(Network) VPC, Subnet, Security Group, Internet Gateway, NAT Gateway, VPC Peering, VPC Endpoint, Load Balancer, Firewall, Transit Gateway, VPN의 역할과 통신 흐름을 이해하고 서비스 요구사항에 맞는 네트워크 구성을 설계할 수 있습니다.
+(Storage) Block Storage, File Storage, Object Storage, Backup의 특성과 용도를 이해하며 여러 VPC와 Multi-AZ 환경에서 데이터 저장소를 구성할 수 있습니다.
+(Database) Replica와 Active-Standby 구조를 활용해 고가용성(HA), 재해 복구(DR), 백업 환경을 구성할 수 있으며 장애 발생 시 점검과 복구 방법을 이해하고 있습니다.
+(Kubernetes) Kubernetes Engine으로 클러스터를 구성하고 서비스 YAML을 작성하여 LoadBalancer 타입의 서비스 노출 구조를 설정할 수 있습니다.
+(Terraform) Terraform Registry의 Samsung Cloud Platform Provider를 활용해 Terraform 파일을 구성하고 IaC 방식으로 클라우드 자원을 생성할 수 있습니다.
+
+Java
 기본 Java문법에 능숙하며 프로젝트에 알맞게 초기설정 및 환경구성이 가능합니다.
 클린코드원칙과 유지보수성을 고려하여 도메인중심의 패키지구조를 설계하며 계층을 명확히 분리해 코드의 응집도와 가독성을  높였습니다. 또한 공통적으로 사용되는 기능은 별도 모듈로 분리하여 관리해 유지보수성을 강화했습니다.
 Junit을 단위 테스트를 통해 주요 비즈니스 로직을 검증하는 테스트 주도 개발을 경험했습니다.
 에이전트를 활용한 개발흐름 및 md문서 구조화를 통한 Harness Engineering을 학습하고 있습니다.
 
 Infra / DevOps
-   (Docker, Nginx, Jenkins, Linux, n8n, MCP server, Kubernetes)
+   (Docker, Nginx, Jenkins, Linux, MCP Server, Kubernetes)
 다양한 기업의 인프라 운영사례를 분석하며 모니터링과 HA구조를 학습했고 이를 디스코드봇 서비스에 적용했습니다.  
 서버마다 반복적인 인프라구성 대신 Ansible 기반 IaC 자동화환경을 구축하여 사용하고있습니다.
 AWS와 Oracle Cloud 환경을 활용해 서비스를 운영했지만 지속적인비용과 자원활용 측면을 고려해 홈서버 환경을 직접 구축해 병행사용하고 있습니다. 이를통해 운영비용을 크게 절감하면서도 안정적인 서비스환경을 유지했습니다.
-n8n을 활용해 업무 자동화환경을 구성해 실제로 활용하고 있습니다. 팀회의 보이스를 AI로 요약해 정해진 형식에 맞게 Notion 문서로 자동정리하는 흐름을 만들었고 메신저에서 하루동안의 대화내용을 요약해 기록으로 저장하는 파이프라인을 구축했습니다.
-MCP서버를 구축해 허용된 함수만 호출하도록 제한하고 로그와 메트릭 데이터를 LLM기반 자연어로 탐색할 수 있는 운영환경을 구현해 사용하고 있습니다.     
+MCP 서버를 구축해 메신저의 하루 대화 내용을 ClickHouse에서 조회하고, LLM이 요약 결과를 출력하는 기능을 구현해 사용하고 있습니다.
+허용된 함수만 호출하도록 제한한 MCP 서버를 통해 로그와 메트릭 데이터를 LLM 기반 자연어로 탐색할 수 있는 운영 환경도 구현했습니다.
 
 Data
    (Kafka, Kafka Connect, FastApi, MySQL, ClickHouse, Redis)
@@ -264,8 +287,9 @@ Jira를 활용해 작업 단위를 이슈 기반으로 관리하고 우선순위
 ];
 
 const subheadings = new Set([
-  "Java", "Infra / DevOps", "Data", "Monitoring", "Git", "Algorithm Study", "ComputerScience Study",
+  "Cloud", "Java", "Infra / DevOps", "Data", "Monitoring", "Git", "Algorithm Study", "ComputerScience Study",
   "삼성청년SW아카데미 10기 - 2023.07 - 2024.06",
+  "AI를 활용할 수 없는 환경에서 키운 문제 해결 역량", "스스로 학습한 내용을 기록하며 쌓아온 지식",
   "Overview.", "Project Team.", "Tech Stack.", "Key Points.", "Experience and Learning.", "Growth Points.",
   "Stable Diffusion LoRA 모델 학습 및 서비스 구현", "Kafka 기반 서비스로그 처리",
   "DB 성능 최적화 및 백업 및 복원 검증 경험", "스케쥴링 관리 서비스 개발",
@@ -277,6 +301,12 @@ const subheadings = new Set([
   "SpringSecurity를 활용한 OAuth2.0 인증/인가 구현", "사용자 경험을 고려한 인증 흐름 개선",
   "JWT 보안 강화 및 클라이언트 관리 부담 최소화", "Blender 활용 3D 아바타 커스터마이징",
   "git 과 Jira를 활용한 체계적인 프로젝트 관리",
+]);
+
+const careerMetaLines = new Set([
+  "2026.07 - 현재",
+  "리버스아이티",
+  "Samsung Cloud Platform 기술지원",
 ]);
 
 function normalizeLines(content: string) {
@@ -300,7 +330,8 @@ function tidySpacing(text: string) {
   return replacements.reduce((result, [before, after]) => result.split(before).join(after), text);
 }
 
-function FormattedContent({ content }: { content: string }) {
+function FormattedContent({ content, linkKnowledge = false }: { content: string; linkKnowledge?: boolean }) {
+  const { setActivePrimaryTab, setKnowledgeBaseSection } = useAppStore();
   const groups: { heading?: string; items: string[] }[] = [];
   for (const line of normalizeLines(content)) {
     if (subheadings.has(line)) groups.push({ heading: line, items: [] });
@@ -310,19 +341,28 @@ function FormattedContent({ content }: { content: string }) {
     }
   }
 
+  const openKnowledgeBase = (sectionId: string) => {
+    setKnowledgeBaseSection(sectionId);
+    setActivePrimaryTab("knowledge-base");
+  };
+
   return <div className="space-y-6">
     {groups.map((group, index) => {
       const linkItems = group.items.filter((item) => /https?:\/\//.test(item));
       const bodyItems = group.items.filter((item) => !/https?:\/\//.test(item));
+      const headingTarget = group.heading ? knowledgeHeadingTargets[group.heading] : undefined;
       return <div key={`${group.heading ?? "content"}-${index}`}>
-      {group.heading ? <div className="mb-3 flex flex-wrap items-center gap-3"><h3 className="text-lg font-bold text-[#3f2b1a]">{group.heading}</h3>{linkItems.map((item) => <span key={item}>{renderLinkedText(item)}</span>)}</div> : null}
+      {group.heading ? <div className="mb-3 flex flex-wrap items-center gap-3"><h3 className="text-lg font-bold text-[#3f2b1a]">{linkKnowledge && headingTarget ? <button type="button" onClick={() => openKnowledgeBase(headingTarget)} className="inline-flex items-center gap-1.5 rounded-md transition hover:text-[#a36c28] hover:underline hover:decoration-[#d2a25f] hover:underline-offset-4" title="Knowledge Base에서 보기">{group.heading}<span aria-hidden="true">↗</span></button> : group.heading}</h3>{linkItems.map((item) => <span key={item}>{renderLinkedText(item)}</span>)}</div> : null}
       {!group.heading && linkItems.length ? <div className="mb-3 flex flex-wrap gap-2">{linkItems.map((item) => <span key={item}>{renderLinkedText(item)}</span>)}</div> : null}
       <ul className="space-y-2.5">
         {bodyItems.map((item, itemIndex) => {
           const isStackLine = item.startsWith("(") && item.endsWith(")");
-          return <li key={`${item}-${itemIndex}`} className={isStackLine ? "-mt-1 text-sm font-semibold leading-7 text-[#9a6a32]" : "flex gap-3 text-[15px] leading-7 text-[#59452f]"}>
-            {isStackLine ? null : <span className="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#b77a2d]" />}
-            <span className="break-words">{renderLinkedText(tidySpacing(item))}</span>
+          const isCareerMetaLine = careerMetaLines.has(item);
+          const careerMetaClass = item === "리버스아이티" ? "text-2xl font-bold leading-8 text-[#3f2b1a]" : item === "Samsung Cloud Platform 기술지원" ? "text-lg font-semibold leading-7 text-[#704920]" : "text-lg font-bold leading-7 text-[#8a6233]";
+          const itemClass = isCareerMetaLine ? careerMetaClass : isStackLine ? "-mt-1 text-sm font-semibold leading-7 text-[#9a6a32]" : "flex gap-3 text-[15px] leading-7 text-[#59452f]";
+          return <li key={`${item}-${itemIndex}`} className={itemClass}>
+            {isStackLine || isCareerMetaLine ? null : <span className="mt-[11px] h-1.5 w-1.5 shrink-0 rounded-full bg-[#b77a2d]" />}
+            <span className="break-words">{linkKnowledge ? renderKnowledgeLinkedText(tidySpacing(item), openKnowledgeBase) : renderLinkedText(tidySpacing(item))}</span>
           </li>;
         })}
       </ul>
@@ -330,12 +370,22 @@ function FormattedContent({ content }: { content: string }) {
   </div>;
 }
 
+function renderKnowledgeLinkedText(text: string, openKnowledgeBase: (sectionId: string) => void) {
+  const keywordTargets = new Map(knowledgeKeywordTargets);
+  const escapedKeywords = [...keywordTargets.keys()].sort((left, right) => right.length - left.length).map((keyword) => keyword.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  const parts = text.split(new RegExp(`(${escapedKeywords.join("|")})`, "g"));
+  return <>{parts.map((part, index) => {
+    const sectionId = keywordTargets.get(part);
+    return sectionId ? <button key={`${part}-${index}`} type="button" onClick={() => openKnowledgeBase(sectionId)} className="rounded-sm font-semibold text-[#704920] underline decoration-[#d2a25f] decoration-1 underline-offset-4 transition hover:bg-[#f4e5c7]" title="Knowledge Base에서 보기">{part}</button> : part;
+  })}</>;
+}
+
 function renderLinkedText(text: string) {
   const urls = text.match(/https?:\/\/[^\s]+/g);
   if (!urls) return text;
   return <span className="flex flex-wrap gap-2">
     {urls.map((url) => {
-      const label = url.includes("velog.io") ? "LoRA모델 학습과정" : "Git Hub";
+      const label = url.includes("Samsung-Cloud-Platform") ? "Samsung Cloud Platform Velog 시리즈" : url.includes("velog.io") ? "LoRA모델 학습과정" : "Git Hub";
       return <a key={url} href={url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-full border border-[#d8bd8c] bg-white px-3 py-1 text-sm font-bold text-[#704920] transition hover:bg-[#f4e5c7]"><ExternalLink className="h-3.5 w-3.5" />{label}</a>;
     })}
   </span>;
@@ -382,7 +432,7 @@ kafka한국사용자모임활동, Geeknews 구독을 통해 지속적으로 기�
         </div>
       </section>
 
-      {sections.map((section) => <section key={section.title} className="rounded-[30px] border border-[#e7d5b2] bg-[#fffaf0] p-7 md:p-10"><h2 className="text-3xl font-bold text-[#3f2b1a]">{section.title}</h2><div className="mt-7"><FormattedContent content={section.content} /></div></section>)}
+      {sections.map((section) => <section key={section.title} className="rounded-[30px] border border-[#e7d5b2] bg-[#fffaf0] p-7 md:p-10"><h2 className="text-3xl font-bold text-[#3f2b1a]">{section.title}</h2><div className="mt-7"><FormattedContent content={section.content} linkKnowledge={section.title === "■ Tech Stack."} /></div></section>)}
 
       <section><h2 className="mb-6 text-4xl font-bold text-[#3f2b1a]">■ Project.</h2><div className="space-y-5">{projects.map((project, index) => {
         const projectLinks = normalizeLines(project.content).filter((line) => /https?:\/\//.test(line));

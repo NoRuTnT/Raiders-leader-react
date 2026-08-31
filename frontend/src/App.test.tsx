@@ -12,16 +12,16 @@ vi.mock("@/pages/main/ui/main-page", () => ({
   MainPage: () => <div>Main Page</div>,
 }));
 
-vi.mock("@/pages/larabot/ui/larabot-page", () => ({
-  LarabotPage: () => <div>Larabot Page</div>,
-}));
-
 vi.mock("@/pages/party-management/ui/party-management-page", () => ({
   PartyManagementPage: () => <div>Party Management Page</div>,
 }));
 
 vi.mock("@/pages/log-analysis/ui/log-analysis-page", () => ({
   LogAnalysisPage: () => <div>Log Analysis Page</div>,
+}));
+
+vi.mock("@/pages/knowledge-base/ui/knowledge-base-page", () => ({
+  KnowledgeBasePage: () => <div>Knowledge Base Page</div>,
 }));
 
 beforeEach(() => {
@@ -54,7 +54,8 @@ describe("App", () => {
     });
 
     expect(screen.getByRole("button", { name: "메인페이지" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "라라봇" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "소개" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Knowledge Base" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "파티관리" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "로그분석" })).toBeInTheDocument();
   });
